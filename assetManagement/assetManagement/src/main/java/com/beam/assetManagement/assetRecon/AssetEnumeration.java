@@ -74,6 +74,7 @@ public class AssetEnumeration {
 
 
         String adsd="null";
+        String akpd="null";
 
         assetRepository.save(savedAsset);
         return null;
