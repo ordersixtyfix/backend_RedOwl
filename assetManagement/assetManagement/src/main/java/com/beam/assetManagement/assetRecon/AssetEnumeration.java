@@ -70,6 +70,8 @@ public class AssetEnumeration {
         AssetData assetData = new AssetData(registrarServer, nameServers);
         savedAsset.setAssetData(assetData);
 
+        String add="null";
+
         assetRepository.save(savedAsset);
         return null;
 
