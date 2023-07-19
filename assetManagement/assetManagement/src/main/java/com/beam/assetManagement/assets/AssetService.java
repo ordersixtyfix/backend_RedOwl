@@ -7,6 +7,8 @@ import com.beam.assetManagement.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class AssetService {
@@ -31,6 +33,10 @@ public class AssetService {
 
 
         System.out.println("CHECK");
+
+        String id = UUID.randomUUID().toString();
+
+        asset.setAssetId(id);
 
         assetRepository.save(asset);
 

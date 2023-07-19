@@ -44,7 +44,7 @@ public class Asset {
 
 
 
-        this.assetId = UUID.randomUUID().toString();
+
         this.assetName=assetName;
         this.assetIpAddress=assetIpAddress;
         this.assetLocation=assetLocation;

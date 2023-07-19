@@ -38,26 +38,23 @@ public class LoginController {
 
 
     @PostMapping("/api/v1/login")
-    public void login(@RequestBody LoginRequest authRequest,HttpServletResponse response) throws Exception {
+    public String login(@RequestBody LoginRequest authRequest,HttpServletResponse response){
 
         Authentication authObject;
         try{
             authentication.authenticate(new
                     UsernamePasswordAuthenticationToken(authRequest.getEmail(),authRequest.getPassword()));
-            //SecurityContextHolder.getContext().setAuthentication(authObject);
+
 
         }catch (BadCredentialsException e){
-            throw new UsernameNotFoundException("invalid user request");
+            return null;
         }
 
         String token = jwtService.generateToken(authRequest.getEmail());
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        //return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 
 
-        response.addCookie(cookie);
-        response.setStatus(HttpServletResponse.SC_OK);
+        return "{\"token\":\""+token+"\"}";
+
     }
 
 

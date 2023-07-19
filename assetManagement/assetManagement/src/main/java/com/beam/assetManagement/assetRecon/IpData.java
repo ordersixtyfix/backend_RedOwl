@@ -30,7 +30,7 @@ public class IpData {
 
 
     IpData(String IpAddress, String subdomainShareIp,String assetId){
-        this.id= UUID.randomUUID().toString();
+
         this.ipAddress=IpAddress;
         this.subdomainShareIp = new HashSet<>();
         this.subdomainShareIp.add(subdomainShareIp);

@@ -70,17 +70,9 @@ public class AssetEnumeration {
         AssetData assetData = new AssetData(registrarServer, nameServers);
         savedAsset.setAssetData(assetData);
 
-        String add="null";
 
 
-        String adsd="null";
-        String akpd="null";
-        String akpddd="null";
-
-
-        String akpdsssd="null";
-
-
+        savedAsset.setAssetId(UUID.randomUUID().toString());
         assetRepository.save(savedAsset);
         return null;
 
@@ -113,6 +105,11 @@ public class AssetEnumeration {
             String ipAddress = obj.getIpAddress();
             List<SubdomainPortData> portData=getPortData(ipAddress);
             obj.insertPortData(portData);
+
+
+            obj.setId(UUID.randomUUID().toString());
+
+
             ipDataRepository.save(obj);
 
         }
@@ -142,12 +139,16 @@ public class AssetEnumeration {
                     for (IpData ipData : ipDataList) {
                         if (ipData.getIpAddress().contains(ipAddress)) {
                             ipData.addShareSubdomains(subdomain);
+
+                            ipData.setId(UUID.randomUUID().toString());
                             ipDataRepository.save(ipData);
                             break;
                         }
                     }
                 } else {
                     IpData ipData = new IpData(ipAddress, subdomain, assetId);
+
+                    ipData.setId(UUID.randomUUID().toString());
                     ipDataRepository.save(ipData);
                 }
                 ipAddresses.add(ipAddress);

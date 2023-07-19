@@ -1,8 +1,10 @@
 package com.beam.assetManagement.assetRecon;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class SubdomainPortData {
 
 
@@ -11,11 +13,7 @@ public class SubdomainPortData {
     private String portState;
     private String portService;
 
-    public SubdomainPortData(String port, String portState, String portService){
-        this.port = port;
-        this.portState=portState;
-        this.portService=portService;
-    }
+
 
 
 
