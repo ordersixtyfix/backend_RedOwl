@@ -43,9 +43,9 @@
 
         private final IpDataService ipDataService;
 
+        private final ServiceEnum serviceEnum;
 
         private final String arda;
-
 
 
 
