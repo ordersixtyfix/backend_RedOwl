@@ -29,6 +29,7 @@ public class IpData {
 
 
 
+
     IpData(String IpAddress, String subdomainShareIp,String assetId){
         this.id=UUID.randomUUID().toString();
 
