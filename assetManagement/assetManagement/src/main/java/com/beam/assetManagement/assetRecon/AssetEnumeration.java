@@ -45,7 +45,7 @@
 
         private final ServiceEnum serviceEnum;
 
-        private final String arda;
+        private final String ardaa;
 
 
 
