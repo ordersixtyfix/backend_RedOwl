@@ -10,6 +10,7 @@ import org.apache.el.parser.AstSetData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Document(collection = "Assets")
+
 public class Asset {
 
 
@@ -44,7 +46,7 @@ public class Asset {
 
 
 
-
+        this.assetId = UUID.randomUUID().toString();
         this.assetName=assetName;
         this.assetIpAddress=assetIpAddress;
         this.assetLocation=assetLocation;

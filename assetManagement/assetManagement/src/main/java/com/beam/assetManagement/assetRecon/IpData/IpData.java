@@ -1,4 +1,4 @@
-package com.beam.assetManagement.assetRecon;
+package com.beam.assetManagement.assetRecon.IpData;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,6 +30,7 @@ public class IpData {
 
 
     IpData(String IpAddress, String subdomainShareIp,String assetId){
+        this.id=UUID.randomUUID().toString();
 
         this.ipAddress=IpAddress;
         this.subdomainShareIp = new HashSet<>();

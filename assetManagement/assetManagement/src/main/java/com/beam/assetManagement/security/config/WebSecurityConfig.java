@@ -36,6 +36,7 @@ import static com.beam.assetManagement.user.AppUserRole.USER;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
+
 @AllArgsConstructor
 @EnableWebSecurity
 public class WebSecurityConfig{
@@ -65,7 +66,7 @@ public class WebSecurityConfig{
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         configuration.setAllowCredentials(true);
@@ -76,19 +77,16 @@ public class WebSecurityConfig{
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
-
-
-
         return http
 
                 .csrf(csrf->csrf.disable())
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> {
-
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/validate")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/registration")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/login")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/create")).permitAll();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/get/**")).authenticated();
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/get/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/scan/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/login/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/access/ports/**")).permitAll();
@@ -102,12 +100,13 @@ public class WebSecurityConfig{
 
 
                 })
-
+                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/validate")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v*/registration/**")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/create")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/get/**")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/scan/**")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/login")))
+
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/login")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/access/ports/**")))
 

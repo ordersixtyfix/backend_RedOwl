@@ -1,4 +1,4 @@
-package com.beam.assetManagement.assetRecon;
+package com.beam.assetManagement.assetRecon.IpData;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +12,7 @@ public class SubdomainPortData {
     private String port;
     private String portState;
     private String portService;
+    private boolean accessibleData;
 
 
 

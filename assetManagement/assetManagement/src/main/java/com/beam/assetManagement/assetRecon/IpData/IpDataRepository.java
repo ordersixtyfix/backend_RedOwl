@@ -1,8 +1,8 @@
-package com.beam.assetManagement.assetRecon;
+package com.beam.assetManagement.assetRecon.IpData;
 
+import com.beam.assetManagement.assetRecon.IpData.IpData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.awt.desktop.OpenFilesEvent;
 import java.util.List;
 import java.util.Optional;
 

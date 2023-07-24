@@ -2,10 +2,12 @@ package com.beam.assetManagement.assets;
 
 import com.beam.assetManagement.assetRecon.AssetEnumeration;
 
-import com.beam.assetManagement.assetRecon.IpData;
-import com.beam.assetManagement.assetRecon.IpDataRepository;
-import com.beam.assetManagement.assetRecon.SubdomainPortData;
+import com.beam.assetManagement.assetRecon.IpData.IpData;
+import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
+import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +47,8 @@ public class AssetController {
 
     }
 
-
-    @PostMapping("/get/{name}")
+    //SCAN SPECIFIC ASSET BY ASSET NAME
+    @PostMapping("/scan/{name}")
     public ResponseEntity<Optional<Asset>> getAssetData(@PathVariable String name) throws Exception {
         Optional<Asset> asset = assetRepository.findByAssetName(name);
 
@@ -55,7 +57,7 @@ public class AssetController {
         return ResponseEntity.ok(asset);
     }
 
-    @PostMapping("/scan/{subdomain}")
+    @PostMapping("/get/{subdomain}")
     public ResponseEntity<List<SubdomainPortData>> getAssetScan(@PathVariable String subdomain) throws Exception {
 
 
@@ -74,10 +76,20 @@ public class AssetController {
         return ResponseEntity.ok(ipData);
     }
 
+
+    //GET ALL ASSET DATA
     @GetMapping("/get/assetdata/")
-    public ResponseEntity<List<Asset>> getAsset() throws Exception {
-        List<Asset> asset = assetRepository.findAll();
-        return ResponseEntity.ok(asset);
+    public ResponseEntity<Page<Asset>> getAsset(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size
+    ) {
+        // Create a Pageable object to represent pagination
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        // Fetch the paginated asset data from the repository
+        Page<Asset> assets = assetRepository.findAll(pageRequest);
+
+        return ResponseEntity.ok(assets);
     }
 
 
@@ -85,10 +97,25 @@ public class AssetController {
     public ResponseEntity<List<IpData>> scanAccessiblePortService(@PathVariable String assetId) throws IOException {
         List<IpData> ipData = ipDataRepository.findByAssetId(assetId);
         assetEnumeration.TryPortServiceAccess(ipData);
-
-
         return null;
+    }
 
+
+
+
+    @GetMapping("/get/asset-count")
+    public String getAssetCount(){
+        long number = assetRepository.count();
+
+        return "{\"assetCount\":\"" + number + "\"}";
+
+    }
+
+    @GetMapping("/get/ip-count")
+    public String getIpCount(){
+        long number = ipDataRepository.count();
+
+        return "{\"IpCount\":\"" + number + "\"}";
 
     }
 

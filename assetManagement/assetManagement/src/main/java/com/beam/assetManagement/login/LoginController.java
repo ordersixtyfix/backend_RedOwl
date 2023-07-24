@@ -17,15 +17,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @AllArgsConstructor
+@RequestMapping(path="api/v1")
 public class LoginController {
 
     private LoginService loginService;
@@ -35,27 +35,36 @@ public class LoginController {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
 
 
-    @PostMapping("/api/v1/login")
-    public String login(@RequestBody LoginRequest authRequest,HttpServletResponse response){
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest authRequest, HttpServletResponse response) {
 
         Authentication authObject;
-        try{
+        try {
             authentication.authenticate(new
-                    UsernamePasswordAuthenticationToken(authRequest.getEmail(),authRequest.getPassword()));
+                    UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
 
 
-        }catch (BadCredentialsException e){
+        } catch (BadCredentialsException e) {
             return null;
         }
 
         String token = jwtService.generateToken(authRequest.getEmail());
 
 
-        return "{\"token\":\""+token+"\"}";
+        return "{\"token\":\"" + token + "\"}";
 
     }
 
+    @PostMapping("/validate")
+    public String validate(@RequestBody TokenValidationRequest request) {
 
+
+        String token = request.getToken();
+
+        return token;
+    }
 }

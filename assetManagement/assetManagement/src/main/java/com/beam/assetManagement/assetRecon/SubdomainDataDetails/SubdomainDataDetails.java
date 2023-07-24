@@ -1,5 +1,6 @@
-package com.beam.assetManagement.assetRecon;
+package com.beam.assetManagement.assetRecon.SubdomainDataDetails;
 
+import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,19 +32,19 @@ public class SubdomainDataDetails {
 
 
 
-    SubdomainDataDetails(String subdomain, List<SubdomainPortData> subdomainPortData){
+    public SubdomainDataDetails(String subdomain, List<SubdomainPortData> subdomainPortData){
         this.subdomainId = UUID.randomUUID().toString();
         this.subdomain= subdomain;
 
     }
 
-    SubdomainDataDetails(String subdomain,boolean isHostDown){
+    public SubdomainDataDetails(String subdomain, boolean isHostDown){
         this.subdomainId = UUID.randomUUID().toString();
         this.subdomain = subdomain;
         this.isHostDown = isHostDown;
     }
 
-    SubdomainDataDetails(String subdomain,List<SubdomainPortData> subdomainPortData,boolean isRedirected, String redirectDomain) {
+    public SubdomainDataDetails(String subdomain, List<SubdomainPortData> subdomainPortData, boolean isRedirected, String redirectDomain) {
         this.subdomainId = UUID.randomUUID().toString();
         this.subdomain= subdomain;
 

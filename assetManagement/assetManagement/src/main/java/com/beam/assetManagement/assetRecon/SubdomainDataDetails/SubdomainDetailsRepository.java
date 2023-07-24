@@ -1,11 +1,9 @@
-package com.beam.assetManagement.assetRecon;
+package com.beam.assetManagement.assetRecon.SubdomainDataDetails;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.awt.desktop.OpenFilesEvent;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface SubdomainDetailsRepository extends MongoRepository<SubdomainDataDetails,String> {
