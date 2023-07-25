@@ -65,21 +65,21 @@
             List<String> registrarServer = getRegistrarData(modifiedDomain);
             Set<String> uniqueSubdomains = new HashSet<>();
             Set<String> uniqueSubdomainIds = new HashSet<>();
-            //Set<String> uniqueIpAddresses = new HashSet<>();
-
 
             subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomains,uniqueSubdomainIds);
             subdomainDataService.SaveSubdomainData(uniqueSubdomainIds,assetId);
 
-            //getDataDetailsObjectById(assetId);
             ipDataService.getIpFromDataDetailsObject(subdomainDataDetailService.getDataDetailsObjectById(assetId),assetId);
             ipDataService.insertPortScanToObject(assetId);
+
+            serviceEnum.findAssets(assetId);
+
+
+
 
 
             AssetData assetData = new AssetData(registrarServer, nameServers);
             savedAsset.setAssetData(assetData);
-
-
 
 
             assetRepository.save(savedAsset);
@@ -195,7 +195,7 @@
 
                     } */
 
-                    SubdomainPortData subdomainPortData = new SubdomainPortData(port, state, service,accessibleData);
+                    SubdomainPortData subdomainPortData = new SubdomainPortData(port, state, service);
                     subdomainPortDataList.add(subdomainPortData);
 
                 }

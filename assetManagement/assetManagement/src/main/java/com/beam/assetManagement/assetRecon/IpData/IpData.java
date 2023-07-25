@@ -1,5 +1,6 @@
 package com.beam.assetManagement.assetRecon.IpData;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -7,12 +8,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @Document(collection = "IpData")
@@ -29,6 +28,8 @@ public class IpData {
 
     private List<SubdomainPortData> PortScanData;
 
+    private List<AccessData> accessData;
+
 
 
 
@@ -39,6 +40,7 @@ public class IpData {
         this.subdomainShareIp = new HashSet<>();
         this.subdomainShareIp.add(subdomainShareIp);
         this.assetId = assetId;
+        this.accessData = new ArrayList<>();
     }
 
 

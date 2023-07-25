@@ -13,7 +13,7 @@ public class SubdomainPortData {
     private String port;
     private String portState;
     private String portService;
-    private boolean accessibleData;
+
 
 
 

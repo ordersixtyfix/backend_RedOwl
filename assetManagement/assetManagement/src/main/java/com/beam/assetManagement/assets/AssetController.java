@@ -1,15 +1,18 @@
 package com.beam.assetManagement.assets;
 
 import com.beam.assetManagement.assetRecon.AssetEnumeration;
-
 import com.beam.assetManagement.assetRecon.IpData.IpData;
 import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
 import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
 import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceEnum;
+import com.beam.assetManagement.common.GenericResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -23,7 +26,7 @@ import java.util.Optional;
 public class AssetController {
 
 
-    private AssetCreateService assetCreateService;
+
 
     private AssetEnumeration assetEnumeration;
 
@@ -35,10 +38,19 @@ public class AssetController {
 
 
 
+    private AssetService assetService;
+
+    @Autowired
+    public AssetController(@Lazy AssetService assetService){
+        this.assetService = assetService;
+    }
+
+
+
     @PostMapping("/create")
     public String createAsset(@RequestBody AssetRequest request){
 
-        return assetCreateService.createAsset(request);
+        return assetService.createAsset(request);
 
     }
 
@@ -107,26 +119,21 @@ public class AssetController {
 
 
     @GetMapping("/get/asset-count")
-    public String getAssetCount(){
-        long number = assetRepository.count();
-
-        return "{\"assetCount\":\"" + number + "\"}";
+    public GenericResponse<Long> getAssetCount(){
+        return new GenericResponse<Long>().setCode(200).setData(assetService.getAssetCount());
 
     }
 
     @GetMapping("/get/ip-count")
-    public String getIpCount(){
-        long number = ipDataRepository.count();
-
-        return "{\"IpCount\":\"" + number + "\"}";
-
+    public GenericResponse<Long> getIpCount(){
+        return new GenericResponse<Long>().setCode(200).setData(assetService.getIpCount());
     }
 
 
 
     @PostMapping("test/{ipAddress}")
     public boolean mysqltest(@PathVariable String ipAddress){
-        boolean accessData = serviceEnum.testMysql(ipAddress);
+        boolean accessData = serviceEnum.testPostgreSQL(ipAddress);
         return accessData;
     }
 

@@ -1,18 +1,57 @@
 package com.beam.assetManagement.assetRecon.ServiceEnum;
 
 
+import com.beam.assetManagement.assetRecon.IpData.IpData;
+import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
+import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
+import java.util.List;
 
 
 @Service
+@AllArgsConstructor
 public class ServiceEnum {
+
+
+    private final IpDataRepository ipDataRepository;
+
+
+
+    public void findAssets(String assetId){
+
+        List<IpData> ipDataList = ipDataRepository.findByAssetId(assetId);
+
+        for(IpData obj: ipDataList){
+            List<SubdomainPortData> subdomainPortDataList = obj.getPortScanData();
+            String ipAddress = obj.getIpAddress();
+            for(SubdomainPortData obj2 : subdomainPortDataList){
+                String service = obj2.getPortService();
+                switch (service) {
+                    case "mysql" -> testMysql(ipAddress);
+                    case "postgresql" -> testPostgreSQL(ipAddress);
+                    case "mongodb" -> System.out.println("mongodb");
+                    case "ftp" -> System.out.println("mongodb");
+                    default -> System.out.println("there is no service for scanning");
+                }
+
+
+
+            }
+
+            }
+    }
+
+
+
+
 
 
     public boolean testConnection(String service,String ipAddress) {
 
-        System.out.println("testConnection-BREAKPOINT");
+
 
     switch (service){
         case "mysql":
@@ -62,37 +101,38 @@ public class ServiceEnum {
 
     public boolean testPostgreSQL(String ipAddress) {
 
-        String url = "jdbc:postgresql://" + ipAddress;
+        String url = "jdbc:postgresql://" + ipAddress+"/";
         String username = "postgres";
+        String password = "root";
 
-        Connection c = null;
-        Statement stmt = null;
-
+        Connection conn = null;
 
         try {
-            Class.forName("org.postgresql.Driver");
-            c = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/testdb",
-                            "newtest", "555");
-            System.out.println("Opened database successfully");
 
-            stmt = c.createStatement();
-            String sql = "CREATE TABLE BUSINESS " +
-                    "(ID INT PRIMARY KEY     NOT NULL," +
-                    " NAME           TEXT    NOT NULL, " +
-                    " AGE            INT     NOT NULL, " +
-                    " ADDRESS        CHAR(50), " +
-                    " SALARY         REAL)";
-            stmt.executeUpdate(sql);
-            stmt.close();
-            c.close();
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
-            System.exit(0);
+            Class.forName("org.postgresql.Driver");
+
+            conn = DriverManager.getConnection(url, username, password);
+            System.out.println("Connection to PostgreSQL database established successfully.");
+
+            return true;
+
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally {
+
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
 
         return false;
     }
+
 
 
 
