@@ -40,13 +40,13 @@ public class SubdomainDataDetails {
 
     }
 
-    public SubdomainDataDetails(String subdomain, boolean isHostDown){
+    public SubdomainDataDetails(String subdomain){
         this.subdomainId = UUID.randomUUID().toString();
         this.subdomain = subdomain;
         this.isHostDown = isHostDown;
     }
 
-    public SubdomainDataDetails(String subdomain, List<SubdomainPortData> subdomainPortData, boolean isRedirected, String redirectDomain) {
+    public SubdomainDataDetails(String subdomain, boolean isRedirected, String redirectDomain) {
         this.subdomainId = UUID.randomUUID().toString();
         this.subdomain= subdomain;
 

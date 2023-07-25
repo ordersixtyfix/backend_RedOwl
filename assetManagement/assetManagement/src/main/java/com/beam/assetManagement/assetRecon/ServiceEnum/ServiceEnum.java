@@ -33,7 +33,7 @@ public class ServiceEnum {
                     case "mysql" -> testMysql(ipAddress);
                     case "postgresql" -> testPostgreSQL(ipAddress);
                     case "mongodb" -> System.out.println("mongodb");
-                    case "ftp" -> System.out.println("mongodb");
+                    case "ftp" -> System.out.println("ftp");
                     default -> System.out.println("there is no service for scanning");
                 }
 

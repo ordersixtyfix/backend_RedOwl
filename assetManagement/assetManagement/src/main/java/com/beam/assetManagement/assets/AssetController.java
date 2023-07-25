@@ -1,9 +1,8 @@
 package com.beam.assetManagement.assets;
 
-import com.beam.assetManagement.assetRecon.AssetEnumeration;
+import com.beam.assetManagement.assetRecon.AssetEnumerationService;
 import com.beam.assetManagement.assetRecon.IpData.IpData;
 import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
-import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
 import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceEnum;
 import com.beam.assetManagement.common.GenericResponse;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,9 +25,9 @@ public class AssetController {
 
 
 
-
-    private AssetEnumeration assetEnumeration;
-
+    @Autowired
+    private AssetEnumerationService assetEnumerationService;
+    @Autowired
     private AssetRepository assetRepository;
 
     private IpDataRepository ipDataRepository;
@@ -67,16 +65,16 @@ public class AssetController {
     public ResponseEntity<Optional<Asset>> getAssetData(@PathVariable String name) throws Exception {
         Optional<Asset> asset = assetRepository.findByAssetName(name);
 
-        assetEnumeration.setAsset(asset);
+        assetEnumerationService.setAsset(asset);
 
         return ResponseEntity.ok(asset);
     }
-
+/*
     @PostMapping("/get/{subdomain}")
     public ResponseEntity<List<SubdomainPortData>> getAssetScan(@PathVariable String subdomain) throws Exception {
 
 
-        List<SubdomainPortData> subdomainPortData = assetEnumeration.getPortData(subdomain);
+        List<SubdomainPortData> subdomainPortData = assetEnumerationService.getPortData(subdomain);
         if(subdomainPortData.isEmpty()){
             return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
         }
@@ -84,7 +82,7 @@ public class AssetController {
             return ResponseEntity.ok(subdomainPortData);
         }
     }
-
+*/
     @PostMapping("/get/scandata/{assetId}")
     public ResponseEntity<List<IpData>> getScanData(@PathVariable String assetId) throws Exception {
         List<IpData> ipData = ipDataRepository.findByAssetId(assetId);
@@ -111,7 +109,7 @@ public class AssetController {
     @PostMapping("/access/ports/{assetId}")
     public ResponseEntity<List<IpData>> scanAccessiblePortService(@PathVariable String assetId) throws IOException {
         List<IpData> ipData = ipDataRepository.findByAssetId(assetId);
-        assetEnumeration.TryPortServiceAccess(ipData);
+        assetEnumerationService.TryPortServiceAccess(ipData);
         return null;
     }
 

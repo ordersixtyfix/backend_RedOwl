@@ -1,35 +1,29 @@
 package com.beam.assetManagement.assetRecon.SubdomainDataDetails;
 
-import com.beam.assetManagement.assetRecon.AssetEnumeration;
-import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
 import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainData;
 import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.InetAddress;
 import java.util.*;
 
 @Service
 @AllArgsConstructor
 public class SubdomainDataDetailService {
 
-    @Autowired
-    private SubdomainRepository subdomainRepository;
-    @Autowired
-    private SubdomainDetailsRepository subdomainDetailsRepository;
 
-    private AssetEnumeration assetEnumeration;
+    private final SubdomainRepository subdomainRepository;
 
-    @Autowired
-    public SubdomainDataDetailService(@Lazy AssetEnumeration assetEnumeration){
-        this.assetEnumeration = assetEnumeration;
-    }
+    private final SubdomainDetailsRepository subdomainDetailsRepository;
+
+
+
+
 
 
 
@@ -45,9 +39,10 @@ public class SubdomainDataDetailService {
             if (line.isEmpty()) {
                 break;
             }
-            List<SubdomainPortData> subdomainPortData = assetEnumeration.getPortData(line);
+            //List<SubdomainPortData> subdomainPortData = assetEnumerationService.getPortData(line);
+            boolean isReachable = isHostReachable(line);
             if (!uniqueSubdomains.contains(line)) {
-                if (subdomainPortData.isEmpty()) {
+                if (!isReachable) {
                     if(subdomainDetailsRepository.existsBySubdomain(line)){
                         HostDownAndExist(uniqueSubdomainIds,line);
                     } else {
@@ -66,7 +61,7 @@ public class SubdomainDataDetailService {
                             HostUpAndExistRedirected(uniqueSubdomainIds,line,redirectDomain);
                         }
                         else {
-                            HostUpAndNotExistRedirected(uniqueSubdomainIds,line,subdomainPortData,redirectDomain,
+                            HostUpAndNotExistRedirected(uniqueSubdomainIds,line,redirectDomain,
                                     subdomainDataDetailsList);
                         }
                     } else {
@@ -75,7 +70,7 @@ public class SubdomainDataDetailService {
                             HostUpAndExistNotRedirected(uniqueSubdomainIds,line);
                         }
                         else {
-                            HostUpAndNotExistNotRedirected(uniqueSubdomainIds,line,subdomainPortData,
+                            HostUpAndNotExistNotRedirected(uniqueSubdomainIds,line,
                                     subdomainDataDetailsList);
 
                         }
@@ -85,6 +80,16 @@ public class SubdomainDataDetailService {
         }
         subdomainDetailsRepository.saveAll(subdomainDataDetailsList);
         return subdomains;
+    }
+
+    public boolean isHostReachable(String host) {
+        try {
+            InetAddress address = InetAddress.getByName(host);
+            return address.isReachable(5000);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 
@@ -132,7 +137,7 @@ public class SubdomainDataDetailService {
     public void HostDownAndNotExist(Set<String> uniqueSubdomainIds,String line,
                                     Set<SubdomainDataDetails> subdomainDataDetailsList){
 
-        SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line, true);
+        SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line);
         String subdomainId = subdomainDataDetails.getSubdomainId();
         uniqueSubdomainIds.add(subdomainId);
         subdomainDataDetailsList.add(subdomainDataDetails);
@@ -150,11 +155,11 @@ public class SubdomainDataDetailService {
         uniqueSubdomainIds.add(savedSubdomainId);
     }
 
-    public void HostUpAndNotExistRedirected(Set<String> uniqueSubdomainIds,String line,List<SubdomainPortData> subdomainPortData,
+    public void HostUpAndNotExistRedirected(Set<String> uniqueSubdomainIds,String line,
                                             String redirectDomain,
                                             Set<SubdomainDataDetails> subdomainDataDetailsList){
 
-        SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line, subdomainPortData,
+        SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line,
                 true, redirectDomain);
         String subdomainId = subdomainDataDetails.getSubdomainId();
         uniqueSubdomainIds.add(subdomainId);
@@ -174,10 +179,10 @@ public class SubdomainDataDetailService {
 
     }
 
-    public void HostUpAndNotExistNotRedirected(Set<String> uniqueSubdomainIds,String line,List<SubdomainPortData> subdomainPortData,
+    public void HostUpAndNotExistNotRedirected(Set<String> uniqueSubdomainIds,String line,
                                                Set<SubdomainDataDetails> subdomainDataDetailsList){
 
-        SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line, subdomainPortData);
+        SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line);
 
         String subdomainId = subdomainDataDetails.getSubdomainId();
         uniqueSubdomainIds.add(subdomainId);

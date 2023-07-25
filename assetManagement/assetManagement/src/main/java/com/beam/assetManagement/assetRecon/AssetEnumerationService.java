@@ -1,35 +1,32 @@
     package com.beam.assetManagement.assetRecon;
 
-            import com.beam.assetManagement.assetRecon.IpData.IpData;
-            import com.beam.assetManagement.assetRecon.IpData.IpDataService;
-            import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
-            import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceEnum;
-            import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainDataService;
-            import com.beam.assetManagement.assetRecon.SubdomainDataDetails.SubdomainDataDetailService;
-            import com.beam.assetManagement.assets.Asset;
-            import com.beam.assetManagement.assets.AssetData;
-            import com.beam.assetManagement.assets.AssetRepository;
-            import com.beam.assetManagement.utils.RegexMatcherService;
-            import org.apache.commons.net.whois.WhoisClient;
+    import com.beam.assetManagement.assetRecon.IpData.IpData;
+    import com.beam.assetManagement.assetRecon.IpData.IpDataService;
+    import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
+    import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceEnum;
+    import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainDataService;
+    import com.beam.assetManagement.assetRecon.SubdomainDataDetails.SubdomainDataDetailService;
+    import com.beam.assetManagement.assets.Asset;
+    import com.beam.assetManagement.assets.AssetData;
+    import com.beam.assetManagement.assets.AssetRepository;
+    import com.beam.assetManagement.utils.RegexMatcherService;
+    import lombok.AllArgsConstructor;
+    import org.apache.commons.net.whois.WhoisClient;
+    import org.springframework.stereotype.Component;
 
-            import lombok.AllArgsConstructor;
-            import org.springframework.stereotype.Component;
-
-            import java.io.BufferedReader;
-            import java.io.IOException;
-            import java.io.InputStreamReader;
-            import java.net.InetAddress;
-            import java.net.UnknownHostException;
-            import java.util.*;
-            import java.util.regex.Matcher;
-            import java.util.regex.Pattern;
+    import java.io.BufferedReader;
+    import java.io.IOException;
+    import java.io.InputStreamReader;
+    import java.util.*;
+    import java.util.regex.Matcher;
+    import java.util.regex.Pattern;
 
 
     @Component
     @AllArgsConstructor
 
 
-    public class AssetEnumeration {
+    public class AssetEnumerationService {
 
         private final AssetRepository assetRepository;
 
@@ -74,10 +71,6 @@
 
             serviceEnum.findAssets(assetId);
 
-
-
-
-
             AssetData assetData = new AssetData(registrarServer, nameServers);
             savedAsset.setAssetData(assetData);
 
@@ -99,13 +92,7 @@
 
 
 
-        public String DomainToIP(String domain) throws IOException, UnknownHostException{
 
-            InetAddress ipAddress = InetAddress.getByName(domain);
-            String ipAddressString = ipAddress.getHostAddress();
-            return ipAddressString;
-
-        }
 
 
 
@@ -166,45 +153,6 @@
 
 
 
-        public List<SubdomainPortData> getPortData(String subdomain) throws IOException{
-
-            String regexPort = "(\\d+\\/\\w+)\\s+(\\w+)\\s+([\\w\\/-]+)";
-
-            Pattern patternPort = Pattern.compile(regexPort);
-
-            ProcessBuilder processBuilder = new ProcessBuilder("nmap", subdomain);
-            processBuilder.redirectErrorStream(true);
-            Process process = processBuilder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            List<SubdomainPortData> subdomainPortDataList = new ArrayList<>();
-
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-
-                Matcher matcherPort = patternPort.matcher(line);
-                boolean accessibleData=false;
-                if (matcherPort.matches()) {
-                    String port = matcherPort.group(1);
-                    String state = matcherPort.group(2);
-                    String service = matcherPort.group(3);
-
-                   /* if (Character.isDigit(subdomain.charAt(0))) {
-
-                        accessibleData = serviceEnum.testConnection(service,subdomain);
-
-                    } */
-
-                    SubdomainPortData subdomainPortData = new SubdomainPortData(port, state, service);
-                    subdomainPortDataList.add(subdomainPortData);
-
-                }
-                if (line.isEmpty()) {
-                    break;
-                }
-            }
-            return subdomainPortDataList;
-        }
 
 
 

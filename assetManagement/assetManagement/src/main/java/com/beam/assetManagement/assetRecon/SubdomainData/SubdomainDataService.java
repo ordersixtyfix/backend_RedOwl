@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-import static com.beam.assetManagement.assetRecon.AssetEnumeration.assetDomainName;
+import static com.beam.assetManagement.assetRecon.AssetEnumerationService.assetDomainName;
 
 @Service
 @AllArgsConstructor

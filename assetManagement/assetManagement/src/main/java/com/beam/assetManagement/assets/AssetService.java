@@ -3,8 +3,6 @@ package com.beam.assetManagement.assets;
 import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
 import com.beam.assetManagement.security.validator.AssetValidator;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -13,21 +11,14 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AssetService {
 
-    @Autowired
-    private AssetRepository assetRepository;
 
-    @Autowired
-    private IpDataRepository ipDataRepository;
+    private final AssetRepository assetRepository;
+
+
+    private final IpDataRepository ipDataRepository;
 
 
     private AssetValidator assetValidator;
-
-    private AssetService assetService;
-
-    @Autowired
-    public AssetService(@Lazy AssetService assetService){
-        this.assetService = assetService;
-    }
 
 
 
@@ -64,7 +55,7 @@ public class AssetService {
             throw new IllegalStateException("email not valid");
         }
 
-        return assetService.registerAsset(
+        return this.registerAsset(
 
                 new Asset(
 

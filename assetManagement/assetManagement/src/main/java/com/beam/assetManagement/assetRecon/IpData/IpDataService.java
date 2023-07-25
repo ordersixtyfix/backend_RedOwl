@@ -1,30 +1,31 @@
 package com.beam.assetManagement.assetRecon.IpData;
 
-import com.beam.assetManagement.assetRecon.AssetEnumeration;
 import com.beam.assetManagement.assetRecon.SubdomainDataDetails.SubdomainDataDetails;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Service
 @AllArgsConstructor
 public class IpDataService {
 
-    @Autowired
-    private  IpDataRepository ipDataRepository;
 
-    private AssetEnumeration assetEnumeration;
+    private final IpDataRepository ipDataRepository;
 
-    @Autowired
-    public IpDataService(@Lazy AssetEnumeration assetEnumeration){
-        this.assetEnumeration = assetEnumeration;
-    }
+
+
+
 
 
 
@@ -34,7 +35,7 @@ public class IpDataService {
 
         for(IpData obj : ipDataList){
             String ipAddress = obj.getIpAddress();
-            List<SubdomainPortData> portData=assetEnumeration.getPortData(ipAddress);
+            List<SubdomainPortData> portData= this.getPortData(ipAddress);
             obj.insertPortData(portData);
 
             ipDataRepository.save(obj);
@@ -55,7 +56,7 @@ public class IpDataService {
             System.out.println(subdomain);
 
             try {
-                String ipAddress = assetEnumeration.DomainToIP(subdomain);
+                String ipAddress = this.DomainToIP(subdomain);
                 if (ipAddresses.contains(ipAddress)) {
                     List<IpData> ipDataList = ipDataRepository.findByAssetId(assetId);
                     for (IpData ipData : ipDataList) {
@@ -77,6 +78,55 @@ public class IpDataService {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    public List<SubdomainPortData> getPortData(String subdomain) throws IOException{
+
+        String regexPort = "(\\d+\\/\\w+)\\s+(\\w+)\\s+([\\w\\/-]+)";
+
+        Pattern patternPort = Pattern.compile(regexPort);
+
+        ProcessBuilder processBuilder = new ProcessBuilder("nmap", subdomain);
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        List<SubdomainPortData> subdomainPortDataList = new ArrayList<>();
+
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+
+            Matcher matcherPort = patternPort.matcher(line);
+            boolean accessibleData=false;
+            if (matcherPort.matches()) {
+                String port = matcherPort.group(1);
+                String state = matcherPort.group(2);
+                String service = matcherPort.group(3);
+
+                   /* if (Character.isDigit(subdomain.charAt(0))) {
+
+                        accessibleData = serviceEnum.testConnection(service,subdomain);
+
+                    } */
+
+                SubdomainPortData subdomainPortData = new SubdomainPortData(port, state, service);
+                subdomainPortDataList.add(subdomainPortData);
+
+            }
+            if (line.isEmpty()) {
+                break;
+            }
+        }
+        return subdomainPortDataList;
+    }
+
+    public String DomainToIP(String domain) throws IOException, UnknownHostException{
+
+        InetAddress ipAddress = InetAddress.getByName(domain);
+        String ipAddressString = ipAddress.getHostAddress();
+        return ipAddressString;
+
     }
 
 

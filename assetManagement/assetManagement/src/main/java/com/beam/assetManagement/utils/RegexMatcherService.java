@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.beam.assetManagement.assetRecon.AssetEnumeration.trimBeforeColon;
+import static com.beam.assetManagement.assetRecon.AssetEnumerationService.trimBeforeColon;
 
 @Service
 public class RegexMatcherService {
