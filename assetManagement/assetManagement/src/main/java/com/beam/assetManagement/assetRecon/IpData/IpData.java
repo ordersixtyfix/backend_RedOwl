@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Document(collection = "IpData")
+@TypeAlias("IpData")
 public class IpData {
     @Id
     private String id;

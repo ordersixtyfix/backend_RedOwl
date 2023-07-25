@@ -5,6 +5,7 @@ import com.beam.assetManagement.assetRecon.AssetEnumeration;
 import com.beam.assetManagement.assetRecon.IpData.IpData;
 import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
 import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
+import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceEnum;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +30,8 @@ public class AssetController {
     private AssetRepository assetRepository;
 
     private IpDataRepository ipDataRepository;
+
+    private ServiceEnum serviceEnum;
 
 
 
@@ -117,6 +120,14 @@ public class AssetController {
 
         return "{\"IpCount\":\"" + number + "\"}";
 
+    }
+
+
+
+    @PostMapping("test/{ipAddress}")
+    public boolean mysqltest(@PathVariable String ipAddress){
+        boolean accessData = serviceEnum.testMysql(ipAddress);
+        return accessData;
     }
 
 

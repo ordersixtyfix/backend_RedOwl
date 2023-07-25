@@ -1,11 +1,12 @@
 package com.beam.assetManagement.assetRecon.IpData;
 
-import com.beam.assetManagement.assetRecon.IpData.IpData;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface IpDataRepository extends MongoRepository<IpData,String> {
 
 

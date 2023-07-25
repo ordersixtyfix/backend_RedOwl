@@ -45,7 +45,7 @@
 
         private final ServiceEnum serviceEnum;
 
-        private final String ardaaa;
+
 
 
 
@@ -188,7 +188,13 @@
                     String port = matcherPort.group(1);
                     String state = matcherPort.group(2);
                     String service = matcherPort.group(3);
-                    serviceEnum.testConnection(service);
+
+                   /* if (Character.isDigit(subdomain.charAt(0))) {
+
+                        accessibleData = serviceEnum.testConnection(service,subdomain);
+
+                    } */
+
                     SubdomainPortData subdomainPortData = new SubdomainPortData(port, state, service,accessibleData);
                     subdomainPortDataList.add(subdomainPortData);
 

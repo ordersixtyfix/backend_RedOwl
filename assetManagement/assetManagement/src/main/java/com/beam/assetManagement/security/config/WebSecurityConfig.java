@@ -2,26 +2,19 @@ package com.beam.assetManagement.security.config;
 
 import com.beam.assetManagement.login.LoginSuccessHandler;
 import com.beam.assetManagement.security.filter.JwtAuthFilter;
-import com.beam.assetManagement.user.AppUserRole;
 import com.beam.assetManagement.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -90,6 +83,7 @@ public class WebSecurityConfig{
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/scan/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/login/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/access/ports/**")).permitAll();
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/test/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/private/**")).authenticated();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/home/**")).hasAnyRole(String.valueOf(SUPER_USER),String.valueOf(USER));
 
@@ -106,6 +100,8 @@ public class WebSecurityConfig{
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/get/**")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/scan/**")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/login")))
+
+                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/test/**")))
 
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/login")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/access/ports/**")))
