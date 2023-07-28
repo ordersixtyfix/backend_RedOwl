@@ -1,15 +1,10 @@
 package com.beam.assetManagement.login;
 
-import com.beam.assetManagement.registration.RegistrationRequest;
 import com.beam.assetManagement.security.validator.EmailValidator;
-import com.beam.assetManagement.user.AppUserRole;
 import com.beam.assetManagement.user.User;
 import com.beam.assetManagement.user.UserRepository;
 import com.beam.assetManagement.user.UserService;
-
 import lombok.AllArgsConstructor;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +12,6 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-
 public class LoginService {
 
 

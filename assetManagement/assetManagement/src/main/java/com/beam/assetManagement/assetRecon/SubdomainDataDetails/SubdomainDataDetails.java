@@ -3,7 +3,6 @@ package com.beam.assetManagement.assetRecon.SubdomainDataDetails;
 import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
@@ -15,7 +14,6 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @Document(collection = "SubdomainDataDetails")
 @TypeAlias("SubdomainDataDetails")
 public class SubdomainDataDetails {
@@ -34,19 +32,19 @@ public class SubdomainDataDetails {
 
 
 
-    public SubdomainDataDetails(String subdomain, List<SubdomainPortData> subdomainPortData){
+    SubdomainDataDetails(String subdomain, List<SubdomainPortData> subdomainPortData){
         this.subdomainId = UUID.randomUUID().toString();
         this.subdomain= subdomain;
 
     }
 
-    public SubdomainDataDetails(String subdomain){
+    SubdomainDataDetails(String subdomain,boolean isHostDown){
         this.subdomainId = UUID.randomUUID().toString();
         this.subdomain = subdomain;
         this.isHostDown = isHostDown;
     }
 
-    public SubdomainDataDetails(String subdomain, boolean isRedirected, String redirectDomain) {
+    SubdomainDataDetails(String subdomain,List<SubdomainPortData> subdomainPortData,boolean isRedirected, String redirectDomain) {
         this.subdomainId = UUID.randomUUID().toString();
         this.subdomain= subdomain;
 

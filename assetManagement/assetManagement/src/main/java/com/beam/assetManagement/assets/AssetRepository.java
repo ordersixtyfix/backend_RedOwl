@@ -4,7 +4,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,4 +16,6 @@ public interface AssetRepository extends MongoRepository<Asset,Integer> {
 
 
     Optional<Asset> deleteAssetByAssetId(String assetId);
+
+
 }

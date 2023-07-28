@@ -6,8 +6,6 @@ import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
 import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceEnum;
 import com.beam.assetManagement.common.GenericResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -20,92 +18,86 @@ import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(path="api/v1/asset")
+@RequestMapping(path = "api/v1/asset")
 public class AssetController {
 
+    private final AssetEnumerationService assetEnumerationService;
 
+    private final AssetRepository assetRepository;
 
-    @Autowired
-    private AssetEnumerationService assetEnumerationService;
-    @Autowired
-    private AssetRepository assetRepository;
+    private final IpDataRepository ipDataRepository;
 
-    private IpDataRepository ipDataRepository;
-
-    private ServiceEnum serviceEnum;
-
-
-
-    private AssetService assetService;
-
-    @Autowired
-    public AssetController(@Lazy AssetService assetService){
-        this.assetService = assetService;
-    }
-
+    private final ServiceEnum serviceEnum;
+    private final AssetService assetService;
 
 
     @PostMapping("/create")
-    public String createAsset(@RequestBody AssetRequest request){
+    public GenericResponse<String> createAsset(@RequestBody AssetRequest request) {
 
-        return assetService.createAsset(request);
+        boolean isCreated = assetService.createAsset(request);
 
+        return new GenericResponse<String>().setCode((isCreated ? 200 : 400));
     }
 
-    @GetMapping("/create")
-    public String createAsset(){
-
-
-        return "TEST-CREATE-ENDPOINT-GET";
-
-    }
 
     //SCAN SPECIFIC ASSET BY ASSET NAME
-    @PostMapping("/scan/{name}")
-    public ResponseEntity<Optional<Asset>> getAssetData(@PathVariable String name) throws Exception {
-        Optional<Asset> asset = assetRepository.findByAssetName(name);
-
-        assetEnumerationService.setAsset(asset);
-
-        return ResponseEntity.ok(asset);
-    }
-/*
-    @PostMapping("/get/{subdomain}")
-    public ResponseEntity<List<SubdomainPortData>> getAssetScan(@PathVariable String subdomain) throws Exception {
-
-
-        List<SubdomainPortData> subdomainPortData = assetEnumerationService.getPortData(subdomain);
-        if(subdomainPortData.isEmpty()){
-            return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
+    @PostMapping("/scan/{assetId}")
+    public GenericResponse<Optional<Asset>> getAssetData(@PathVariable String assetId) throws Exception {
+        try {
+            assetEnumerationService.setAsset(assetId);
+            return new GenericResponse<Optional<Asset>>().setCode(200);
+        } catch (Exception e) {
+            return new GenericResponse<Optional<Asset>>().setCode(400);
         }
-        else{
-            return ResponseEntity.ok(subdomainPortData);
-        }
+
+
     }
-*/
-    @PostMapping("/get/scandata/{assetId}")
-    public ResponseEntity<List<IpData>> getScanData(@PathVariable String assetId) throws Exception {
-        List<IpData> ipData = ipDataRepository.findByAssetId(assetId);
-        return ResponseEntity.ok(ipData);
+
+    /*
+        @PostMapping("/get/{subdomain}")
+        public ResponseEntity<List<SubdomainPortData>> getAssetScan(@PathVariable String subdomain) throws Exception {
+
+
+            List<SubdomainPortData> subdomainPortData = assetEnumerationService.getPortData(subdomain);
+            if(subdomainPortData.isEmpty()){
+                return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
+            }
+            else{
+                return ResponseEntity.ok(subdomainPortData);
+            }
+        }
+    */
+    @GetMapping("/get/scandata/{assetId}")
+    public GenericResponse<List<IpData>> getScanData(@PathVariable String assetId) throws Exception {
+
+        try {
+            List<IpData> ipData = ipDataRepository.findByAssetId(assetId);
+
+            return new GenericResponse<List<IpData>>().setCode(200).setData(ipData);
+
+        } catch (Exception e) {
+            return new GenericResponse<List<IpData>>().setCode(400);
+        }
+
+
     }
 
 
     //GET ALL ASSET DATA
     @GetMapping("/get/assetdata/")
-    public ResponseEntity<Page<Asset>> getAsset(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size
-    ) {
-        // Create a Pageable object to represent pagination
-        PageRequest pageRequest = PageRequest.of(page, size);
+    public GenericResponse<Page<Asset>> getAsset(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size) {
+        try {
+            PageRequest pageRequest = PageRequest.of(page, size);
+            Page<Asset> assets = assetRepository.findAll(pageRequest);
+            return new GenericResponse<Page<Asset>>().setCode(200).setData(assets);
 
-        // Fetch the paginated asset data from the repository
-        Page<Asset> assets = assetRepository.findAll(pageRequest);
+        }catch (Exception e){
+            return new GenericResponse<Page<Asset>>().setCode(400);
+        }
 
-        return ResponseEntity.ok(assets);
     }
 
-
+    //TEST ENDPOINT
     @PostMapping("/access/ports/{assetId}")
     public ResponseEntity<List<IpData>> scanAccessiblePortService(@PathVariable String assetId) throws IOException {
         List<IpData> ipData = ipDataRepository.findByAssetId(assetId);
@@ -114,30 +106,50 @@ public class AssetController {
     }
 
 
-
-
     @GetMapping("/get/asset-count")
-    public GenericResponse<Long> getAssetCount(){
-        return new GenericResponse<Long>().setCode(200).setData(assetService.getAssetCount());
+    public GenericResponse<Long> getAssetCount() {
+        try{
+            return new GenericResponse<Long>().setCode(200).setData(assetService.getAssetCount());
+        }
+        catch (Exception e){
+            return new GenericResponse<Long>().setCode(400);
+        }
+
 
     }
 
     @GetMapping("/get/ip-count")
-    public GenericResponse<Long> getIpCount(){
-        return new GenericResponse<Long>().setCode(200).setData(assetService.getIpCount());
+    public GenericResponse<Long> getIpCount() {
+        try{
+            return new GenericResponse<Long>().setCode(200).setData(assetService.getIpCount());
+        }catch (Exception e){
+            return new GenericResponse<Long>().setCode(400);
+        }
+
+
     }
 
 
-
+    //TEST ENDPOINT
     @PostMapping("test/{ipAddress}")
-    public boolean mysqltest(@PathVariable String ipAddress){
+    public boolean mysqltest(@PathVariable String ipAddress) {
         boolean accessData = serviceEnum.testPostgreSQL(ipAddress);
         return accessData;
     }
 
 
+    @GetMapping("get/{assetId}")
+    public GenericResponse<String> getAssetName(@PathVariable String assetId){
+         try{
+             return new GenericResponse<String>().setCode(200).setData(assetService.getAssetName(assetId).
+                     get().getAssetName());
+
+         }catch (Exception e){
+             return new GenericResponse<String>().setCode(400);
+         }
 
 
+    }
 
 
 }

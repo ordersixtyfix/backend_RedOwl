@@ -2,7 +2,6 @@ package com.beam.assetManagement.assetRecon.IpData;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
@@ -13,7 +12,6 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @Document(collection = "IpData")
 @TypeAlias("IpData")
 public class IpData {

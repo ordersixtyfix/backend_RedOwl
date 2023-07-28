@@ -2,13 +2,14 @@ package com.beam.assetManagement.assets;
 
 import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
 import com.beam.assetManagement.security.validator.AssetValidator;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AssetService {
 
 
@@ -18,17 +19,18 @@ public class AssetService {
     private final IpDataRepository ipDataRepository;
 
 
-    private AssetValidator assetValidator;
+    private final AssetValidator assetValidator;//
 
 
 
-    public String registerAsset(Asset asset) {
+    public boolean registerAsset(Asset asset) {
 
 
         boolean assetExists = assetRepository.findByAssetName(asset.getAssetName()).isPresent();
 
         if (assetExists) {
-            throw new IllegalStateException("Asset already exists");
+            //throw new IllegalStateException("Asset already exists");
+            return false;
         }
 
 
@@ -44,10 +46,10 @@ public class AssetService {
         //TODO: Send confirmation token
 
 
-        return "it works";
+        return true;
     }
 
-    public String createAsset(AssetRequest request) {
+    public boolean createAsset(AssetRequest request) {
 
         boolean isValidAsset = assetValidator.test(request.getAssetName());
 
@@ -78,6 +80,8 @@ public class AssetService {
     public long getAssetCount(){
         return assetRepository.count();
     }
+
+    public Optional<Asset> getAssetName(String assetId){return assetRepository.findByAssetId(assetId);}
 
 
 }

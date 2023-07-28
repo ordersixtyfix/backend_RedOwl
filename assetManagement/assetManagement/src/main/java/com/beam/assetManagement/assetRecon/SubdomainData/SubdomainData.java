@@ -1,7 +1,6 @@
 package com.beam.assetManagement.assetRecon.SubdomainData;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
@@ -12,7 +11,6 @@ import java.util.Set;
 @Data
 
 @NoArgsConstructor
-@EqualsAndHashCode
 @Document(collection = "SubdomainData")
 @TypeAlias("SubdomainData")
 public class SubdomainData {

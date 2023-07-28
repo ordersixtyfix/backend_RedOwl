@@ -79,7 +79,7 @@ public class WebSecurityConfig{
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/registration")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/login")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/create")).permitAll();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/get/**")).permitAll();
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/get/**")).authenticated();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/scan/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/login/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/access/ports/**")).permitAll();

@@ -1,22 +1,19 @@
 package com.beam.assetManagement.registration;
 
-import com.beam.assetManagement.user.UserService;
-import com.beam.assetManagement.user.AppUserRole;
-import com.beam.assetManagement.registration.RegistrationRequest;
-import com.beam.assetManagement.user.User;
-import com.beam.assetManagement.user.UserRepository;
 import com.beam.assetManagement.security.validator.EmailValidator;
-import lombok.AllArgsConstructor;
+import com.beam.assetManagement.user.AppUserRole;
+import com.beam.assetManagement.user.User;
+import com.beam.assetManagement.user.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RegistrationService {
 
     private final UserService userService;
     private final EmailValidator emailValidator;
 
-    private final UserRepository userRepository;
 
 
 

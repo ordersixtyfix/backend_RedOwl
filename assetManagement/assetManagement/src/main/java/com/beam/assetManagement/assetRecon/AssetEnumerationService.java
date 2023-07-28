@@ -10,7 +10,7 @@
     import com.beam.assetManagement.assets.AssetData;
     import com.beam.assetManagement.assets.AssetRepository;
     import com.beam.assetManagement.utils.RegexMatcherService;
-    import lombok.AllArgsConstructor;
+    import lombok.RequiredArgsConstructor;
     import org.apache.commons.net.whois.WhoisClient;
     import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@
 
 
     @Component
-    @AllArgsConstructor
+    @RequiredArgsConstructor
 
 
     public class AssetEnumerationService {
@@ -46,15 +46,15 @@
 
 
 
-        public List<String> setAsset(Optional<Asset> asset) throws Exception {
-
+        public List<String> setAsset(String assetId) throws Exception {
+            Optional<Asset> asset = assetRepository.findByAssetId(assetId);
             Asset testAsset = asset.get();
             String assetDomain = testAsset.getAssetDomain();
             String assetName = testAsset.getAssetName();
 
             assetDomainName = assetName;
 
-            String assetId = testAsset.getAssetId();
+
             Asset savedAsset = assetRepository.findByAssetId(testAsset.getAssetId()).orElse(null);
             String modifiedDomain = assetDomain.substring(4);
 
@@ -62,6 +62,8 @@
             List<String> registrarServer = getRegistrarData(modifiedDomain);
             Set<String> uniqueSubdomains = new HashSet<>();
             Set<String> uniqueSubdomainIds = new HashSet<>();
+            //Set<String> uniqueIpAddresses = new HashSet<>();
+
 
             subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomains,uniqueSubdomainIds);
             subdomainDataService.SaveSubdomainData(uniqueSubdomainIds,assetId);
@@ -69,7 +71,6 @@
             ipDataService.getIpFromDataDetailsObject(subdomainDataDetailService.getDataDetailsObjectById(assetId),assetId);
             ipDataService.insertPortScanToObject(assetId);
 
-            serviceEnum.findAssets(assetId);
 
             AssetData assetData = new AssetData(registrarServer, nameServers);
             savedAsset.setAssetData(assetData);
@@ -79,22 +80,6 @@
             return null;
 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         public static List<String> getNameServers(String domainName) throws Exception {
@@ -136,28 +121,6 @@
         }
 
 
-
-
-
-
-        public String ExtractRedirectedDomain(String redirectDomain){
-            String extractedRedirectDomain = redirectDomain.replace("https://", "").
-                    replace("http://", "").replaceAll("/+$", "");
-            return extractedRedirectDomain;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
         public static String trimBeforeColon(String input) {
             int colonIndex = input.indexOf(":");
             if (colonIndex != -1) {
@@ -166,6 +129,7 @@
                 return input;
             }
         }
+
 
 
 
