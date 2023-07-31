@@ -6,8 +6,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.csrf.MissingCsrfTokenException;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@Service
 public class JwtService {
 
     public static final String SECRET="681hXCLn2A2Bq7X7CVhjAZk0HOv+iZJhkezsW81qmqLcpjr/pgAsmS7KxLoneBL+";

@@ -17,7 +17,13 @@ public class SubdomainDataService {
     public void SaveSubdomainData(Set<String> subdomainIds, String assetId) {
 
         Set<String> subdomainIdList = subdomainIds;
-        SubdomainData subdomainData = new SubdomainData(subdomainIdList,assetDomainName,assetId);
+        //SubdomainData subdomainData = new SubdomainData(subdomainIdList,assetDomainName,assetId);
+        SubdomainData subdomainData = SubdomainData.builder()
+                .subdomainIds(subdomainIdList)
+                .assetName(assetDomainName)
+                .id(assetId).build();
+
+
         subdomainRepository.save(subdomainData);
 
     }

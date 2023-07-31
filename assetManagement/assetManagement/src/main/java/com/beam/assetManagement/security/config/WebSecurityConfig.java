@@ -85,10 +85,13 @@ public class WebSecurityConfig{
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/access/ports/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/test/**")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/private/**")).authenticated();
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/statics")).authenticated();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/home/**")).hasAnyRole(String.valueOf(SUPER_USER),String.valueOf(USER));
 
 
                     auth.anyRequest().authenticated();
+
+
 
 
 
@@ -100,6 +103,8 @@ public class WebSecurityConfig{
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/get/**")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/scan/**")))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/login")))
+                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/statics/**")))
+
 
                 .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/test/**")))
 

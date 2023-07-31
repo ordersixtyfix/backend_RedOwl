@@ -2,12 +2,10 @@ package com.beam.assetManagement.assets;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-@Data
-public class AssetData{
 
+@Data
+public class AssetData {
 
 
     private List<String> registrarData;
@@ -16,20 +14,12 @@ public class AssetData{
 
 
 
-
-
-    // Constructor with arguments
     public AssetData(List<String> registrarData, List<String> nameServersData) {
         this.registrarData = registrarData;
-        this.nameServersData=nameServersData;
-
-
+        this.nameServersData = nameServersData;
 
 
     }
-
-
-
 
 
 }

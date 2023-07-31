@@ -94,14 +94,14 @@ public class SubdomainDataDetailService {
 
     public Set<SubdomainDataDetails> getDataDetailsObjectById(String assetId){
 
-        Optional<SubdomainData> subdomainData= subdomainRepository.findByDomainId(assetId);
+        Optional<SubdomainData> subdomainData= subdomainRepository.findById(assetId);
         SubdomainData data = subdomainData.get();
         Set<String> subdomainIds = data.getSubdomainIds();
         Set<SubdomainDataDetails> subdomainDataDetailsList = new HashSet<>();
         for(String stock: subdomainIds){
-            Optional<SubdomainDataDetails> subdomainDataDetails = subdomainDetailsRepository.findBySubdomainId(stock);
+            Optional<SubdomainDataDetails> subdomainDataDetails = subdomainDetailsRepository.findById(stock);
             SubdomainDataDetails object=subdomainDataDetails.get();
-            boolean isHostDown = object.getHostDown();
+            boolean isHostDown = object.isHostDown();
             if(!isHostDown){
                 subdomainDataDetailsList.add(object);
             }
@@ -117,15 +117,16 @@ public class SubdomainDataDetailService {
         SubdomainDataDetails savedDetails = findBySubdomain(line);
         savedDetails.setHostDown(true);
 
-        String savedSubdomainId = savedDetails.getSubdomainId();
+        String savedSubdomainId = savedDetails.getId();
         uniqueSubdomainIds.add(savedSubdomainId);
     }
 
     public void HostDownAndNotExist(Set<String> uniqueSubdomainIds,String line,
                                     Set<SubdomainDataDetails> subdomainDataDetailsList){
 
-        SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line, true);
-        String subdomainId = subdomainDataDetails.getSubdomainId();
+        //SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line, true);
+        SubdomainDataDetails subdomainDataDetails = SubdomainDataDetails.builder().subdomain(line).isHostDown(true).build();
+        String subdomainId = subdomainDataDetails.getId();
         uniqueSubdomainIds.add(subdomainId);
         subdomainDataDetailsList.add(subdomainDataDetails);
 
@@ -139,7 +140,7 @@ public class SubdomainDataDetailService {
 
         savedDetails.setRedirectDomain(redirectDomain);
         savedDetails.setRedirected(true);
-        String savedSubdomainId = savedDetails.getSubdomainId();
+        String savedSubdomainId = savedDetails.getId();
         uniqueSubdomainIds.add(savedSubdomainId);
     }
 
@@ -147,9 +148,10 @@ public class SubdomainDataDetailService {
                                             String redirectDomain,
                                             Set<SubdomainDataDetails> subdomainDataDetailsList){
 
-        SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line, subdomainPortData,
-                true, redirectDomain);
-        String subdomainId = subdomainDataDetails.getSubdomainId();
+        //SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line,
+        //        true, redirectDomain);
+        SubdomainDataDetails subdomainDataDetails = SubdomainDataDetails.builder().subdomain(line).isRedirected(true).redirectDomain(redirectDomain).build();
+        String subdomainId = subdomainDataDetails.getId();
         uniqueSubdomainIds.add(subdomainId);
         subdomainDataDetailsList.add(subdomainDataDetails);
     }
@@ -162,7 +164,7 @@ public class SubdomainDataDetailService {
         savedDetails.setHostDown(false);
 
 
-        String savedSubdomainId = savedDetails.getSubdomainId();
+        String savedSubdomainId = savedDetails.getId();
         uniqueSubdomainIds.add(savedSubdomainId);
 
     }
@@ -170,9 +172,10 @@ public class SubdomainDataDetailService {
     public void HostUpAndNotExistNotRedirected(Set<String> uniqueSubdomainIds,String line,List<SubdomainPortData> subdomainPortData,
                                                Set<SubdomainDataDetails> subdomainDataDetailsList){
 
-        SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line, subdomainPortData);
+        //SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line);
+        SubdomainDataDetails subdomainDataDetails = SubdomainDataDetails.builder().subdomain(line).build();
 
-        String subdomainId = subdomainDataDetails.getSubdomainId();
+        String subdomainId = subdomainDataDetails.getId();
         uniqueSubdomainIds.add(subdomainId);
         subdomainDataDetailsList.add(subdomainDataDetails);
     }

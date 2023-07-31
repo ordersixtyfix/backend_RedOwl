@@ -2,12 +2,11 @@ package com.beam.assetManagement.assets;
 
 import com.beam.assetManagement.assetRecon.AssetEnumerationService;
 import com.beam.assetManagement.assetRecon.IpData.IpData;
-import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
+import com.beam.assetManagement.assetRecon.IpData.IpDataService;
 import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceEnum;
 import com.beam.assetManagement.common.GenericResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,12 @@ public class AssetController {
 
     private final AssetRepository assetRepository;
 
-    private final IpDataRepository ipDataRepository;
+
+
+    private final IpDataService ipDataService;
+
+
+
 
     private final ServiceEnum serviceEnum;
     private final AssetService assetService;
@@ -34,9 +38,15 @@ public class AssetController {
     @PostMapping("/create")
     public GenericResponse<String> createAsset(@RequestBody AssetRequest request) {
 
-        boolean isCreated = assetService.createAsset(request);
+        try{
+            boolean isCreated = assetService.createAsset(request);
 
-        return new GenericResponse<String>().setCode((isCreated ? 200 : 400));
+            return new GenericResponse<String>().setCode(200);
+        }catch (Exception e){
+            return new GenericResponse<String>().setCode(400);
+        }
+
+
     }
 
 
@@ -71,7 +81,7 @@ public class AssetController {
     public GenericResponse<List<IpData>> getScanData(@PathVariable String assetId) throws Exception {
 
         try {
-            List<IpData> ipData = ipDataRepository.findByAssetId(assetId);
+            List<IpData> ipData = ipDataService.getIpDataObjectList(assetId);
 
             return new GenericResponse<List<IpData>>().setCode(200).setData(ipData);
 
@@ -84,12 +94,21 @@ public class AssetController {
 
 
     //GET ALL ASSET DATA
-    @GetMapping("/get/assetdata/")
-    public GenericResponse<Page<Asset>> getAsset(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size) {
+    @GetMapping("/get/assetdata/{userId}")
+    public GenericResponse<Page<Asset>> getAsset(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size,@PathVariable String userId) {
+
+
+
+
         try {
-            PageRequest pageRequest = PageRequest.of(page, size);
-            Page<Asset> assets = assetRepository.findAll(pageRequest);
-            return new GenericResponse<Page<Asset>>().setCode(200).setData(assets);
+            boolean isAdmin = assetService.userValidation(userId);
+            if(isAdmin){
+                return new GenericResponse<Page<Asset>>().setCode(200).setData(assetService.getAllAssets(page,size));
+            }
+            else {
+                return new GenericResponse<Page<Asset>>().setCode(200).setData(assetService.getAssetByUserId(userId,page,size));
+            }
+
 
         }catch (Exception e){
             return new GenericResponse<Page<Asset>>().setCode(400);
@@ -100,16 +119,19 @@ public class AssetController {
     //TEST ENDPOINT
     @PostMapping("/access/ports/{assetId}")
     public ResponseEntity<List<IpData>> scanAccessiblePortService(@PathVariable String assetId) throws IOException {
-        List<IpData> ipData = ipDataRepository.findByAssetId(assetId);
+        List<IpData> ipData = ipDataService.getIpDataObjectList(assetId);
         assetEnumerationService.TryPortServiceAccess(ipData);
         return null;
     }
 
 
-    @GetMapping("/get/asset-count")
-    public GenericResponse<Long> getAssetCount() {
+   @GetMapping("/get/asset-count/{userId}")
+    public GenericResponse<Long> getAssetCount(@PathVariable String userId) {
         try{
-            return new GenericResponse<Long>().setCode(200).setData(assetService.getAssetCount());
+
+
+
+            return new GenericResponse<Long>().setCode(200).setData(assetService.getAssetCount(userId));
         }
         catch (Exception e){
             return new GenericResponse<Long>().setCode(400);
@@ -141,7 +163,7 @@ public class AssetController {
     @GetMapping("get/{assetId}")
     public GenericResponse<String> getAssetName(@PathVariable String assetId){
          try{
-             return new GenericResponse<String>().setCode(200).setData(assetService.getAssetName(assetId).
+             return new GenericResponse<String>().setCode(200).setData(assetService.getAssetById(assetId).
                      get().getAssetName());
 
          }catch (Exception e){
@@ -150,6 +172,12 @@ public class AssetController {
 
 
     }
+
+
+
+
+
+
 
 
 }

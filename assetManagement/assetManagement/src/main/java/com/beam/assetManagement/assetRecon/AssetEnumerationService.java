@@ -47,7 +47,7 @@
 
 
         public List<String> setAsset(String assetId) throws Exception {
-            Optional<Asset> asset = assetRepository.findByAssetId(assetId);
+            Optional<Asset> asset = assetRepository.findById(assetId);
             Asset testAsset = asset.get();
             String assetDomain = testAsset.getAssetDomain();
             String assetName = testAsset.getAssetName();
@@ -55,7 +55,7 @@
             assetDomainName = assetName;
 
 
-            Asset savedAsset = assetRepository.findByAssetId(testAsset.getAssetId()).orElse(null);
+            Asset savedAsset = assetRepository.findById(testAsset.getId()).orElse(null);
             String modifiedDomain = assetDomain.substring(4);
 
             List<String> nameServers = getNameServers(modifiedDomain);

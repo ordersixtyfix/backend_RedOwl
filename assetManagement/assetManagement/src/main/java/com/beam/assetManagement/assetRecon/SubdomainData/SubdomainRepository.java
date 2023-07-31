@@ -11,7 +11,7 @@ public interface SubdomainRepository extends MongoRepository<SubdomainData,Strin
 
     Optional<SubdomainData> findByAssetName(String name);
 
-    Optional<SubdomainData> findByDomainId(String id);
+    Optional<SubdomainData> findById(String id);
 
     boolean existsByAssetName(String name);
 }

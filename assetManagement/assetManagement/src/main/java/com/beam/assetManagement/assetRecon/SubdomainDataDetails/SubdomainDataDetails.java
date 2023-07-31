@@ -1,25 +1,22 @@
 package com.beam.assetManagement.assetRecon.SubdomainDataDetails;
 
-import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
+import com.beam.assetManagement.assetRecon.Base.Base;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "SubdomainDataDetails")
 @TypeAlias("SubdomainDataDetails")
-public class SubdomainDataDetails {
+@SuperBuilder
+public class SubdomainDataDetails extends Base {
 
-    @Id
-    private String subdomainId;
+
     private String subdomain;
 
     private boolean isRedirected = false;
@@ -27,35 +24,6 @@ public class SubdomainDataDetails {
     private String redirectDomain;
 
     private boolean isHostDown = false;
-
-
-
-
-
-    SubdomainDataDetails(String subdomain, List<SubdomainPortData> subdomainPortData){
-        this.subdomainId = UUID.randomUUID().toString();
-        this.subdomain= subdomain;
-
-    }
-
-    SubdomainDataDetails(String subdomain,boolean isHostDown){
-        this.subdomainId = UUID.randomUUID().toString();
-        this.subdomain = subdomain;
-        this.isHostDown = isHostDown;
-    }
-
-    SubdomainDataDetails(String subdomain,List<SubdomainPortData> subdomainPortData,boolean isRedirected, String redirectDomain) {
-        this.subdomainId = UUID.randomUUID().toString();
-        this.subdomain= subdomain;
-
-        this.isRedirected = isRedirected;
-        this.redirectDomain = redirectDomain;
-    }
-    public boolean getHostDown(){
-        return isHostDown;
-    }
-
-
 
 
 }

@@ -14,5 +14,5 @@ public interface SubdomainDetailsRepository extends MongoRepository<SubdomainDat
 
     Optional<SubdomainDataDetails> findBySubdomain(String subdomain);
 
-    Optional<SubdomainDataDetails> findBySubdomainId(String subdomainId);
+    Optional<SubdomainDataDetails> findById(String subdomainId);
 }

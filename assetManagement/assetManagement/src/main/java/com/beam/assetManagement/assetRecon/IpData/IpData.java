@@ -1,22 +1,24 @@
 package com.beam.assetManagement.assetRecon.IpData;
 
+import com.beam.assetManagement.assetRecon.Base.Base;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "IpData")
 @TypeAlias("IpData")
-public class IpData {
-    @Id
-    private String id;
+@SuperBuilder
+public class IpData extends Base {
+
 
     private String assetId;
 
@@ -30,33 +32,14 @@ public class IpData {
 
 
 
-
-
-
-
-    IpData(String IpAddress, String subdomainShareIp,String assetId){
-        this.id=UUID.randomUUID().toString();
-
-        this.ipAddress=IpAddress;
-        this.subdomainShareIp = new HashSet<>();
-        this.subdomainShareIp.add(subdomainShareIp);
-        this.assetId = assetId;
-        this.accessData = new ArrayList<>();
-    }
-
-
-
-    public void addShareSubdomains(String  subdomain) {
+    public void addShareSubdomains(String subdomain) {
         subdomainShareIp.add(subdomain);
     }
 
-    public void insertPortData(List<SubdomainPortData> subdomainPortDataList){
-        this.PortScanData=subdomainPortDataList;
+    public void insertPortData(List<SubdomainPortData> subdomainPortDataList) {
+        this.PortScanData = subdomainPortDataList;
     }
 
-    public Set<String> getSharedDomains(){
-        return subdomainShareIp;
-    }
 
 
 

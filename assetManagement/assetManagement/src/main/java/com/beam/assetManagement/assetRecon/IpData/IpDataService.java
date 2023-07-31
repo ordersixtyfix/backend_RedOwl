@@ -9,12 +9,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 @Service
 @RequiredArgsConstructor
 public class IpDataService {
@@ -29,7 +27,7 @@ public class IpDataService {
 
     }
 
-    public List<SubdomainPortData> getPortData(String subdomain) throws IOException{
+    public List<SubdomainPortData> getPortData(String subdomain) throws IOException {
 
         String regexPort = "(\\d+\\/\\w+)\\s+(\\w+)\\s+([\\w\\/-]+)";
 
@@ -62,11 +60,10 @@ public class IpDataService {
         return subdomainPortDataList;
     }
 
-    public void getIpFromDataDetailsObject(Set<SubdomainDataDetails> subdomainDataDetailsList, String assetId)
-            throws IOException {
+    public void getIpFromDataDetailsObject(Set<SubdomainDataDetails> subdomainDataDetailsList, String assetId) throws IOException {
         Set<String> ipAddresses = new HashSet<>();
 
-        if(ipDataRepository.existsByAssetId(assetId)){
+        if (ipDataRepository.existsByAssetId(assetId)) {
             ipDataRepository.deleteAllByAssetId(assetId);
         }
         for (SubdomainDataDetails dataDetails : subdomainDataDetailsList) {
@@ -85,7 +82,13 @@ public class IpDataService {
                         }
                     }
                 } else {
-                    IpData ipData = new IpData(ipAddress, subdomain, assetId);
+                    //IpData ipData = new IpData(ipAddress, subdomain, assetId);
+                    IpData ipData = IpData.builder().ipAddress(ipAddress).assetId(assetId)
+                            .subdomainShareIp(new HashSet<>()).accessData(new ArrayList<>()).build();
+
+                    ipData.addShareSubdomains(subdomain);
+                    ipData.setId(UUID.randomUUID().toString());
+
                     ipDataRepository.save(ipData);
                 }
                 ipAddresses.add(ipAddress);
@@ -102,9 +105,9 @@ public class IpDataService {
 
         List<IpData> ipDataList = ipDataRepository.findByAssetId(assetId);
 
-        for(IpData obj : ipDataList){
+        for (IpData obj : ipDataList) {
             String ipAddress = obj.getIpAddress();
-            List<SubdomainPortData> portData=getPortData(ipAddress);
+            List<SubdomainPortData> portData = getPortData(ipAddress);
             obj.insertPortData(portData);
             ipDataRepository.save(obj);
 
@@ -113,10 +116,9 @@ public class IpDataService {
     }
 
 
-
-
-
-
+    public List<IpData> getIpDataObjectList(String assetId) {
+        return ipDataRepository.findByAssetId(assetId);
+    }
 
 
 }

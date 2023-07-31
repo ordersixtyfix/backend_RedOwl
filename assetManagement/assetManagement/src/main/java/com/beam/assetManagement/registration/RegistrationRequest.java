@@ -1,14 +1,11 @@
 package com.beam.assetManagement.registration;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
+@Data
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
+
 
 public class RegistrationRequest {
 

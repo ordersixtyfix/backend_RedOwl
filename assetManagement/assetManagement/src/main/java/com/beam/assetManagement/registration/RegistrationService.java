@@ -1,6 +1,5 @@
 package com.beam.assetManagement.registration;
 
-import com.beam.assetManagement.security.validator.EmailValidator;
 import com.beam.assetManagement.user.AppUserRole;
 import com.beam.assetManagement.user.User;
 import com.beam.assetManagement.user.UserService;
@@ -12,37 +11,38 @@ import org.springframework.stereotype.Service;
 public class RegistrationService {
 
     private final UserService userService;
-    private final EmailValidator emailValidator;
+
 
 
 
 
     public User register(RegistrationRequest request) {
+        try {
 
-        boolean isValidEmail = emailValidator.test(request.getEmail());
+            if (request.getFirstName().isEmpty() ||
+                    request.getLastName().isEmpty()||
+                    request.getPassword().isEmpty() ||
+                    request.getEmail().isEmpty()) {
+                throw new IllegalArgumentException("All fields in the RegistrationRequest must be provided.");
+            }
 
-        if(!isValidEmail){
-            throw new IllegalStateException("email not valid");
+
+
+
+            return userService.signUpUser(User.builder()
+                    .lastName(request.getLastName())
+                    .firstName(request.getFirstName())
+                    .email(request.getEmail())
+                    .password(request.getPassword())
+                    .appUserRole(AppUserRole.USER).build());
+
+
+
+        } catch (Exception e) {
+
+            throw new IllegalStateException("User cannot created");
         }
-        return userService.signUpUser(
-
-
-
-                new User(
-
-                        request.getLastName(),
-                        request.getFirstName(),
-                        request.getEmail(),
-                        request.getPassword(),
-                        AppUserRole.USER
-
-                )
-
-
-
-
-
-        );
+    }
     }
 
-}
+

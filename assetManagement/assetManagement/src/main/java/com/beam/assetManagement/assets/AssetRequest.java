@@ -1,16 +1,11 @@
 package com.beam.assetManagement.assets;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
+@Data
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
 public class AssetRequest {
-
 
 
     private String assetName;
@@ -20,6 +15,8 @@ public class AssetRequest {
     private String assetIpAddress;
 
     private String assetDomain;
+
+    private String userId;
 
 
 }

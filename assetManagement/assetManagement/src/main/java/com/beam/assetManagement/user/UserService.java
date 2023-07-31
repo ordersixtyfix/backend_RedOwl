@@ -1,6 +1,5 @@
 package com.beam.assetManagement.user;
 
-import com.beam.assetManagement.security.validator.EmailValidator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -19,22 +18,27 @@ public class UserService implements UserDetailsService {
     private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final EmailValidator emailValidator;
 
 
 
     @PostConstruct
-    private void postConstruct(){
+    private void postConstruct() {
 
 
 
-        User admin = new User("Gul","Bora","admin@admin.com","+5%sko7d!", AppUserRole.SUPER_USER);
+
+        User admin = User.builder()
+                .lastName("Gul")
+                .firstName("Bora")
+                .email("admin@admin.com")
+                .password("+5%sko7d!")
+                .appUserRole(AppUserRole.SUPER_USER)
+                .build();
 
 
-        boolean userExists = userRepository.findByEmail(admin.getEmail())
-                .isPresent();
+        boolean userExists = userRepository.findByEmail(admin.getEmail()).isPresent();
 
-        if(!userExists){
+        if (!userExists) {
 
             String encodedPassword = bCryptPasswordEncoder.encode(admin.getPassword());
 
@@ -42,10 +46,6 @@ public class UserService implements UserDetailsService {
 
             userRepository.save(admin);
         }
-
-
-
-
 
 
     }
@@ -56,21 +56,16 @@ public class UserService implements UserDetailsService {
 
 
         Optional<User> account = userRepository.findByEmail(email);
-        if (account.isEmpty()) throw new UsernameNotFoundException ("User Not Found");
+        if (account.isEmpty()) throw new UsernameNotFoundException("User Not Found");
         return new org.springframework.security.core.userdetails.User(account.get().getEmail(), account.get().getPassword(), AuthorityUtils.createAuthorityList(account.get().getAppUserRole().toString()));
 
 
-
-
-        //return userRepository.findByEmail(email)
-        //       .orElseThrow(()->new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, email)));
     }
 
-    public User signUpUser(User user){
-        boolean userExists = userRepository.findByEmail(user.getEmail())
-                .isPresent();
+    public User signUpUser(User user) {
+        boolean userExists = userRepository.findByEmail(user.getEmail()).isPresent();
 
-        if(userExists){
+        if (userExists) {
             throw new IllegalStateException("Email already taken");
         }
 
@@ -80,13 +75,27 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodedPassword);
 
         userRepository.save(user);
-
-
-        //TODO: Send confirmation token
-
-
-
         return user;
     }
 
-}
+
+    public UserDto getUserByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        System.out.println(user.get().getId());
+
+        return new UserDto().builder()
+                .id(user.get().getId())
+                .firstName(user.get().getFirstName())
+                .lastName(user.get().getLastName())
+                .email(user.get().getEmail())
+                .appUserRole(user.get().getAppUserRole())
+                .build();
+
+        }
+
+
+
+    }
+
+
+
