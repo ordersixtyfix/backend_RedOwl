@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class UserDto extends Base {
+public class UserDto extends Base{
 
 
     private String firstName;
@@ -21,6 +21,8 @@ public class UserDto extends Base {
     private AppUserRole appUserRole;
 
     private String jwtToken;
+
+    private String firmId;
 
 
 }

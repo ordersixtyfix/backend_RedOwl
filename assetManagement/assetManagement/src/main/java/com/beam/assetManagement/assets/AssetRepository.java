@@ -18,9 +18,9 @@ public interface AssetRepository extends MongoRepository<Asset, Integer> {
 
     Optional<Asset> findById(String assetId);
 
-    Page<Asset> findByUserId(String userId, PageRequest pageRequest);
+    Page<Asset> findByFirmId(String userId, PageRequest pageRequest);
 
-    List<Asset> findByUserId(String userId);
+    List<Asset> findByFirmId(String userId);
 
 
 

@@ -1,10 +1,12 @@
 package com.beam.assetManagement.security.config;
 
-import com.beam.assetManagement.login.LoginSuccessHandler;
-import com.beam.assetManagement.security.filter.JwtAuthFilter;
+import com.beam.assetManagement.user.UserDto;
 import com.beam.assetManagement.user.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,36 +16,39 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import static com.beam.assetManagement.user.AppUserRole.SUPER_USER;
-import static com.beam.assetManagement.user.AppUserRole.USER;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
-
 @AllArgsConstructor
 @EnableWebSecurity
-public class WebSecurityConfig{
+public class WebSecurityConfig {
 
+    private final ObjectMapper objectMapper;
     private final UserService userService;
-
-    private final LoginSuccessHandler loginSuccessHandler;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    private JwtAuthFilter authFilter;
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userService);
         provider.setPasswordEncoder(bCryptPasswordEncoder);
@@ -51,7 +56,16 @@ public class WebSecurityConfig{
     }
 
     @Bean
-    AuthenticationManager getAuthenticationManager(AuthenticationConfiguration configuration) throws Exception{
+    public SwitchUserFilter switchUserFilter() {
+        SwitchUserFilter filter = new SwitchUserFilter();
+        filter.setUserDetailsService(userService);
+        filter.setSuccessHandler(authenticationSuccessHandler());
+        filter.setFailureHandler(authenticationFailureHandler());
+        return filter;
+    }
+
+    @Bean
+    AuthenticationManager getAuthenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
@@ -59,7 +73,7 @@ public class WebSecurityConfig{
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         configuration.setAllowCredentials(true);
@@ -69,92 +83,80 @@ public class WebSecurityConfig{
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
-
         return http
+                .csrf(csrf -> csrf.disable())
 
-                .csrf(csrf->csrf.disable())
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/validate")).permitAll();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/registration")).permitAll();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/login")).permitAll();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/create")).permitAll();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/get/**")).authenticated();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/scan/**")).permitAll();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/login/**")).permitAll();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/access/ports/**")).permitAll();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/test/**")).permitAll();
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/**")).authenticated();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/private/**")).authenticated();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/statics")).authenticated();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/home/**")).hasAnyRole(String.valueOf(SUPER_USER),String.valueOf(USER));
-
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/statics/**")).authenticated();
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/user/**")).authenticated();
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/switch-user")).authenticated();
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/firm/**")).authenticated();
 
                     auth.anyRequest().authenticated();
-
-
-
-
-
-
                 })
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/validate")))
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v*/registration/**")))
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/create")))
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/get/**")))
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/scan/**")))
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/login")))
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/statics/**")))
+                //.csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/**")))
+                .formLogin(form -> form
+                        .successHandler(authenticationSuccessHandler())
+                        .failureHandler(authenticationFailureHandler())
 
-
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/test/**")))
-
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/login")))
-                .csrf(csrf -> csrf.ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/access/ports/**")))
-
-
-                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-
-
-
-
-                .formLogin(form->form
-
-                        .successHandler(loginSuccessHandler)
-
-                        .permitAll()
 
                 )
+                .addFilterAfter(switchUserFilter(), FilterSecurityInterceptor.class)
 
 
+
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .authenticationProvider(authenticationProvider())
 
                 .build();
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
 
 
+        return new SimpleUrlAuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
+                UserDto userDto = userService.getUserByEmail(authentication.getName());
 
 
+                Map<String, Object> jsonResponse = new HashMap<>();
+                response.setContentType("application/json");
+                jsonResponse.put("statusCode", HttpServletResponse.SC_OK);
+                jsonResponse.put("user", userDto);
 
 
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.writeValue(response.getWriter(), jsonResponse);
+            }
+        };
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler() {
+            @Override
+            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
 
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setContentType("application/json");
 
 
+                Map<String, Object> jsonResponse = new HashMap<>();
+                jsonResponse.put("statusCode", HttpServletResponse.SC_BAD_REQUEST);
 
 
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.writeValue(response.getWriter(), jsonResponse);
+            }
+        };
+    }
 
 }

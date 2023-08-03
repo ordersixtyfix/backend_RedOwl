@@ -3,7 +3,6 @@
     import com.beam.assetManagement.assetRecon.IpData.IpData;
     import com.beam.assetManagement.assetRecon.IpData.IpDataService;
     import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
-    import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceEnum;
     import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainDataService;
     import com.beam.assetManagement.assetRecon.SubdomainDataDetails.SubdomainDataDetailService;
     import com.beam.assetManagement.assets.Asset;
@@ -40,7 +39,7 @@
 
         private final IpDataService ipDataService;
 
-        private final ServiceEnum serviceEnum;
+
 
 
 

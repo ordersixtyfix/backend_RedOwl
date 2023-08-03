@@ -9,10 +9,11 @@ import lombok.Data;
 
 public class RegistrationRequest {
 
-    private final String firstName;
-    private final String lastName;
-    private final String password;
-    private final String email;
+    private String firstName;
+    private String lastName;
+    private String password;
+    private String email;
+    private String firmId;
 
 
 }

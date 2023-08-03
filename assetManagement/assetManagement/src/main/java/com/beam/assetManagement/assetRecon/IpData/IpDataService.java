@@ -82,7 +82,7 @@ public class IpDataService {
                         }
                     }
                 } else {
-                    //IpData ipData = new IpData(ipAddress, subdomain, assetId);
+
                     IpData ipData = IpData.builder().ipAddress(ipAddress).assetId(assetId)
                             .subdomainShareIp(new HashSet<>()).accessData(new ArrayList<>()).build();
 

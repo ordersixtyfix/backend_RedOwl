@@ -25,10 +25,7 @@ public class AssetController {
     private final AssetRepository assetRepository;
 
 
-
     private final IpDataService ipDataService;
-
-
 
 
     private final ServiceEnum serviceEnum;
@@ -38,14 +35,34 @@ public class AssetController {
     @PostMapping("/create")
     public GenericResponse<String> createAsset(@RequestBody AssetRequest request) {
 
-        try{
-            boolean isCreated = assetService.createAsset(request);
+        try {
+            assetService.createAsset(request);
 
             return new GenericResponse<String>().setCode(200);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new GenericResponse<String>().setCode(400);
         }
 
+    }
+
+
+    @PostMapping("/create-admin/{userId}")
+    public GenericResponse<String> createAssetBySuperUser(@RequestBody AssetRequest request, @PathVariable String userId) {
+
+        try {
+            boolean isAdmin = assetService.userValidation(userId);
+            if (isAdmin) {
+
+                assetService.createAssetBySuperUser(request);
+                return new GenericResponse<String>().setCode(200);
+            } else {
+                return new GenericResponse<String>().setCode(400);
+            }
+
+
+        } catch (Exception e) {
+            return new GenericResponse<String>().setCode(400);
+        }
 
     }
 
@@ -94,23 +111,20 @@ public class AssetController {
 
 
     //GET ALL ASSET DATA
-    @GetMapping("/get/assetdata/{userId}")
-    public GenericResponse<Page<Asset>> getAsset(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size,@PathVariable String userId) {
-
-
+    @GetMapping("/get/assetdata/{firmId}/{userId}")
+    public GenericResponse<Page<Asset>> getAsset(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size, @PathVariable String firmId,@PathVariable String userId) {
 
 
         try {
             boolean isAdmin = assetService.userValidation(userId);
-            if(isAdmin){
-                return new GenericResponse<Page<Asset>>().setCode(200).setData(assetService.getAllAssets(page,size));
-            }
-            else {
-                return new GenericResponse<Page<Asset>>().setCode(200).setData(assetService.getAssetByUserId(userId,page,size));
+            if (isAdmin) {
+                return new GenericResponse<Page<Asset>>().setCode(200).setData(assetService.getAllAssets(page, size));
+            } else {
+                return new GenericResponse<Page<Asset>>().setCode(200).setData(assetService.getAssetByFirmId(firmId, page, size));
             }
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return new GenericResponse<Page<Asset>>().setCode(400);
         }
 
@@ -125,15 +139,13 @@ public class AssetController {
     }
 
 
-   @GetMapping("/get/asset-count/{userId}")
+    @GetMapping("/get/asset-count/{userId}")
     public GenericResponse<Long> getAssetCount(@PathVariable String userId) {
-        try{
-
+        try {
 
 
             return new GenericResponse<Long>().setCode(200).setData(assetService.getAssetCount(userId));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return new GenericResponse<Long>().setCode(400);
         }
 
@@ -142,9 +154,9 @@ public class AssetController {
 
     @GetMapping("/get/ip-count")
     public GenericResponse<Long> getIpCount() {
-        try{
+        try {
             return new GenericResponse<Long>().setCode(200).setData(assetService.getIpCount());
-        }catch (Exception e){
+        } catch (Exception e) {
             return new GenericResponse<Long>().setCode(400);
         }
 
@@ -161,23 +173,17 @@ public class AssetController {
 
 
     @GetMapping("get/{assetId}")
-    public GenericResponse<String> getAssetName(@PathVariable String assetId){
-         try{
-             return new GenericResponse<String>().setCode(200).setData(assetService.getAssetById(assetId).
-                     get().getAssetName());
+    public GenericResponse<String> getAssetName(@PathVariable String assetId) {
+        try {
+            return new GenericResponse<String>().setCode(200).setData(assetService.getAssetById(assetId).
+                    get().getAssetName());
 
-         }catch (Exception e){
-             return new GenericResponse<String>().setCode(400);
-         }
+        } catch (Exception e) {
+            return new GenericResponse<String>().setCode(400);
+        }
 
 
     }
-
-
-
-
-
-
 
 
 }

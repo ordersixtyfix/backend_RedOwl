@@ -16,7 +16,7 @@ public class AssetRequest {
 
     private String assetDomain;
 
-    private String userId;
+    private String firmId;
 
 
 }

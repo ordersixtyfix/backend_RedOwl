@@ -1,5 +1,6 @@
 package com.beam.assetManagement.user;
 
+
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,19 +23,12 @@ public class UserService implements UserDetailsService {
 
 
 
+
     @PostConstruct
     private void postConstruct() {
 
 
-
-
-        User admin = User.builder()
-                .lastName("Gul")
-                .firstName("Bora")
-                .email("admin@admin.com")
-                .password("+5%sko7d!")
-                .appUserRole(AppUserRole.SUPER_USER)
-                .build();
+        User admin = User.builder().lastName("Gul").firstName("Bora").email("admin@admin.com").password("+5%sko7d!").appUserRole(AppUserRole.SUPER_USER).build();
 
 
         boolean userExists = userRepository.findByEmail(admin.getEmail()).isPresent();
@@ -43,6 +38,7 @@ public class UserService implements UserDetailsService {
             String encodedPassword = bCryptPasswordEncoder.encode(admin.getPassword());
 
             admin.setPassword(encodedPassword);
+            admin.setId(UUID.randomUUID().toString());
 
             userRepository.save(admin);
         }
@@ -73,6 +69,7 @@ public class UserService implements UserDetailsService {
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 
         user.setPassword(encodedPassword);
+        user.setId(UUID.randomUUID().toString());
 
         userRepository.save(user);
         return user;
@@ -81,21 +78,44 @@ public class UserService implements UserDetailsService {
 
     public UserDto getUserByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        System.out.println(user.get().getId());
 
-        return new UserDto().builder()
+
+        return UserDto.builder()
                 .id(user.get().getId())
                 .firstName(user.get().getFirstName())
                 .lastName(user.get().getLastName())
                 .email(user.get().getEmail())
                 .appUserRole(user.get().getAppUserRole())
-                .build();
+                .firmId(user.get().getFirmId()).build();
 
-        }
+    }
 
+
+    public String isSuperUser(String userId) {
+
+        String role = String.valueOf(userRepository.findById(userId).get().getAppUserRole());
+        return role;
+
+    }
+
+    public UserDto getFirstUserByFirmId(String firmId){
+        Optional<User> user = userRepository.findFirstByFirmId(firmId);
+        return UserDto.builder()
+                .id(user.get().getId())
+                .firstName(user.get().getFirstName())
+                .lastName(user.get().getLastName())
+                .email(user.get().getEmail())
+                .appUserRole(user.get().getAppUserRole())
+                .firmId(user.get().getFirmId()).build();
 
 
     }
+
+
+
+
+
+}
 
 
 
