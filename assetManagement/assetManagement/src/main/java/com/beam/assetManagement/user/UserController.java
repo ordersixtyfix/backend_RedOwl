@@ -31,7 +31,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("user-by-firm/{firmId}/{userId}")
+    @GetMapping("user-by-firm/{userId}/{firmId}")
     public GenericResponse<UserDto> getFirstUserByFirmId(@PathVariable String firmId, @PathVariable String userId){
 
 

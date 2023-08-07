@@ -63,21 +63,31 @@ public class AssetService {
     }
 
 
-    public long getIpCount() {
-        return ipDataRepository.count();
+    public long getIpCount(String firmId) {
+
+        Optional<User> user = userRepository.findFirstByFirmId(firmId);
+        String role = String.valueOf(user.get().getAppUserRole());
+
+        if(role=="SUPER_USER"){
+            return ipDataRepository.count();
+        }else {
+            return ipDataRepository.findByFirmId(firmId).stream().count();
+        }
+
     }
 
-    public long getAssetCount(String userId) {
+    public long getAssetCount(String firmId,String userId) {
 
         Optional<User> user = userRepository.findById(userId);
         String role = String.valueOf(user.get().getAppUserRole());
+
 
         if (role == "SUPER_USER") {
             return assetRepository.findAll().stream().count();
 
         } else {
-            List<Asset> asset = assetRepository.findByFirmId(userId);
-            return asset.stream().count();
+            List<Asset> assetList = assetRepository.findByFirmId(firmId);
+            return assetList.stream().count();
         }
 
 

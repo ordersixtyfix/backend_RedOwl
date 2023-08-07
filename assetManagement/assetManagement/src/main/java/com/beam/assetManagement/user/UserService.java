@@ -28,7 +28,8 @@ public class UserService implements UserDetailsService {
     private void postConstruct() {
 
 
-        User admin = User.builder().lastName("Gul").firstName("Bora").email("admin@admin.com").password("+5%sko7d!").appUserRole(AppUserRole.SUPER_USER).build();
+        User admin = User.builder().lastName("Gul").firstName("Bora").email("admin@admin.com").password("+5%sko7d!")
+                .appUserRole(AppUserRole.SUPER_USER).firmId(UUID.randomUUID().toString()).build();
 
 
         boolean userExists = userRepository.findByEmail(admin.getEmail()).isPresent();

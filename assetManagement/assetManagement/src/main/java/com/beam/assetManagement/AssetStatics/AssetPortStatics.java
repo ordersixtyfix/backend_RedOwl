@@ -14,4 +14,5 @@ public class AssetPortStatics {
     private int filteredPortCount;
 
     private int closedPortCount;
+
 }

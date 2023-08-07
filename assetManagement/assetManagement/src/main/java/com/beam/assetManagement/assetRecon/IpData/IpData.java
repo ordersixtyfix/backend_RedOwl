@@ -30,6 +30,8 @@ public class IpData extends Base {
 
     private List<AccessData> accessData;
 
+    private String firmId;
+
 
 
     public void addShareSubdomains(String subdomain) {
