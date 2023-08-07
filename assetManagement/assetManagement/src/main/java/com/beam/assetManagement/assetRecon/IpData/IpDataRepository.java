@@ -19,6 +19,7 @@ public interface IpDataRepository extends MongoRepository<IpData,String> {
 
     Optional<IpData> findByAssetIdAndIpAddress(String assetId,String ipAddress);
 
+    List<IpData> findByFirmId(String firmId);
 
 
     boolean existsByAssetId(String assetId);

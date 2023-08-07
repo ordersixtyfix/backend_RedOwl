@@ -1,7 +1,13 @@
 package com.beam.assetManagement.assetRecon.IpData;
 
 import com.beam.assetManagement.assetRecon.SubdomainDataDetails.SubdomainDataDetails;
+import com.beam.assetManagement.assets.Asset;
+import com.beam.assetManagement.assets.AssetRepository;
+import com.beam.assetManagement.emailSender.EmailSenderService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -15,9 +21,15 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class IpDataService {
 
     private final IpDataRepository ipDataRepository;
+
+    private final AssetRepository assetRepository;
+
+    private final EmailSenderService emailSenderService;
+
 
     public String DomainToIP(String domain) throws IOException, UnknownHostException {
 
@@ -68,7 +80,7 @@ public class IpDataService {
         }
         for (SubdomainDataDetails dataDetails : subdomainDataDetailsList) {
             String subdomain = dataDetails.getSubdomain();
-            System.out.println(subdomain);
+            log.info(subdomain);
 
             try {
                 String ipAddress = DomainToIP(subdomain);
@@ -83,8 +95,7 @@ public class IpDataService {
                     }
                 } else {
 
-                    IpData ipData = IpData.builder().ipAddress(ipAddress).assetId(assetId)
-                            .subdomainShareIp(new HashSet<>()).accessData(new ArrayList<>()).build();
+                    IpData ipData = IpData.builder().ipAddress(ipAddress).assetId(assetId).subdomainShareIp(new HashSet<>()).accessData(new ArrayList<>()).build();
 
                     ipData.addShareSubdomains(subdomain);
                     ipData.setId(UUID.randomUUID().toString());
@@ -93,32 +104,101 @@ public class IpDataService {
                 }
                 ipAddresses.add(ipAddress);
             } catch (UnknownHostException e) {
-                System.err.println("Failed to resolve IP address for domain: " + subdomain);
+                log.info("Failed to resolve IP address for domain: " + subdomain);
             } catch (IOException e) {
-                System.err.println("An error occurred while resolving IP address for domain: " + subdomain);
+                log.info("An error occurred while resolving IP address for domain: " + subdomain);
                 e.printStackTrace();
             }
         }
     }
 
-    public void insertPortScanToObject(String assetId) throws IOException {
+    public void insertPortScanToObject(String assetId, String firmId) throws IOException {
 
         List<IpData> ipDataList = ipDataRepository.findByAssetId(assetId);
 
-        for (IpData obj : ipDataList) {
-            String ipAddress = obj.getIpAddress();
-            List<SubdomainPortData> portData = getPortData(ipAddress);
-            obj.insertPortData(portData);
-            ipDataRepository.save(obj);
+        try {
 
+            for (IpData obj : ipDataList) {
+                String ipAddress = obj.getIpAddress();
+                List<SubdomainPortData> portData = getPortData(ipAddress);
+                obj.insertPortData(portData);
+                obj.setFirmId(firmId);
+                ipDataRepository.save(obj);
+
+            }
+
+        } catch (DataAccessException e) {
+            log.error("Data access error occurred while processing port scan for assetId: " + assetId, e);
         }
 
+
     }
+
+
+    public List<String> detectPort(String assetId) throws IOException, MessagingException {
+        List<String> newPorts = new ArrayList<>();
+        List<String> closedPorts = new ArrayList<>();
+
+        List<IpData> ipDataList = ipDataRepository.findByAssetId(assetId);
+        Optional<Asset> asset = assetRepository.findById(assetId);
+        String assetName = asset.get().getAssetName();
+
+        if (!ipDataList.isEmpty()) {
+            for (IpData ipData : ipDataList) {
+                String ipAddress = ipData.getIpAddress();
+                List<SubdomainPortData> portDataList = getPortData(ipAddress);
+
+
+                for (SubdomainPortData subdomainPortData : portDataList) {
+
+                    String port = subdomainPortData.getPort();
+
+                    boolean found = false;
+                    boolean notExist = true;
+
+                    for (SubdomainPortData existingData : ipData.getPortScanData()) {
+
+                        if (existingData.getPort().equals(port)) {
+                            found = true;
+                            notExist = false;
+                            break;
+                        }
+
+                    }
+                    if (!found) {
+                        log.info("MISSING PORT: " + port);
+                        newPorts.add(port);
+                        newPorts.add(ipAddress);
+                    } else if (notExist) {
+
+                        closedPorts.add(port);
+                        closedPorts.add(ipAddress);
+                    }
+                }
+
+            }
+
+        } else {
+            log.info("NO DATA FOUND");
+        }
+
+        if (!newPorts.isEmpty() || !closedPorts.isEmpty()) {
+            emailSenderService.sendPortStatusEmail(newPorts,closedPorts,assetName);
+        }
+
+        return newPorts;
+    }
+
 
 
     public List<IpData> getIpDataObjectList(String assetId) {
         return ipDataRepository.findByAssetId(assetId);
     }
+
+
+
+
+
 
 
 }

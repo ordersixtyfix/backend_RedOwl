@@ -55,7 +55,7 @@ public class SubdomainDataDetailService {
                             HostUpAndExistRedirected(uniqueSubdomainIds,line,redirectDomain);
                         }
                         else {
-                            HostUpAndNotExistRedirected(uniqueSubdomainIds,line,subdomainPortData,redirectDomain,
+                            HostUpAndNotExistRedirected(uniqueSubdomainIds,line,redirectDomain,
                                     subdomainDataDetailsList);
                         }
                     } else {
@@ -64,7 +64,7 @@ public class SubdomainDataDetailService {
                             HostUpAndExistNotRedirected(uniqueSubdomainIds,line);
                         }
                         else {
-                            HostUpAndNotExistNotRedirected(uniqueSubdomainIds,line,subdomainPortData,
+                            HostUpAndNotExistNotRedirected(uniqueSubdomainIds,line,
                                     subdomainDataDetailsList);
 
                         }
@@ -125,7 +125,8 @@ public class SubdomainDataDetailService {
                                     Set<SubdomainDataDetails> subdomainDataDetailsList){
 
         //SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line, true);
-        SubdomainDataDetails subdomainDataDetails = SubdomainDataDetails.builder().subdomain(line).isHostDown(true).build();
+        SubdomainDataDetails subdomainDataDetails = SubdomainDataDetails.builder().id(UUID.randomUUID().toString())
+                .subdomain(line).isHostDown(true).build();
         String subdomainId = subdomainDataDetails.getId();
         uniqueSubdomainIds.add(subdomainId);
         subdomainDataDetailsList.add(subdomainDataDetails);
@@ -144,13 +145,14 @@ public class SubdomainDataDetailService {
         uniqueSubdomainIds.add(savedSubdomainId);
     }
 
-    public void HostUpAndNotExistRedirected(Set<String> uniqueSubdomainIds,String line,List<SubdomainPortData> subdomainPortData,
+    public void HostUpAndNotExistRedirected(Set<String> uniqueSubdomainIds,String line,
                                             String redirectDomain,
                                             Set<SubdomainDataDetails> subdomainDataDetailsList){
 
         //SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line,
         //        true, redirectDomain);
-        SubdomainDataDetails subdomainDataDetails = SubdomainDataDetails.builder().subdomain(line).isRedirected(true).redirectDomain(redirectDomain).build();
+        SubdomainDataDetails subdomainDataDetails = SubdomainDataDetails.builder().id(UUID.randomUUID().toString())
+                .subdomain(line).isRedirected(true).redirectDomain(redirectDomain).build();
         String subdomainId = subdomainDataDetails.getId();
         uniqueSubdomainIds.add(subdomainId);
         subdomainDataDetailsList.add(subdomainDataDetails);
@@ -169,11 +171,12 @@ public class SubdomainDataDetailService {
 
     }
 
-    public void HostUpAndNotExistNotRedirected(Set<String> uniqueSubdomainIds,String line,List<SubdomainPortData> subdomainPortData,
+    public void HostUpAndNotExistNotRedirected(Set<String> uniqueSubdomainIds,String line,
                                                Set<SubdomainDataDetails> subdomainDataDetailsList){
 
         //SubdomainDataDetails subdomainDataDetails = new SubdomainDataDetails(line);
-        SubdomainDataDetails subdomainDataDetails = SubdomainDataDetails.builder().subdomain(line).build();
+        SubdomainDataDetails subdomainDataDetails = SubdomainDataDetails.builder().id(UUID.randomUUID().toString())
+                .subdomain(line).build();
 
         String subdomainId = subdomainDataDetails.getId();
         uniqueSubdomainIds.add(subdomainId);

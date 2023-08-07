@@ -14,13 +14,14 @@ public class SubdomainDataService {
     private final SubdomainRepository subdomainRepository;
 
 
-    public void SaveSubdomainData(Set<String> subdomainIds, String assetId) {
+    public void SaveSubdomainData(Set<String> subdomainIds, String assetId, String firmId) {
 
         Set<String> subdomainIdList = subdomainIds;
-        //SubdomainData subdomainData = new SubdomainData(subdomainIdList,assetDomainName,assetId);
+
         SubdomainData subdomainData = SubdomainData.builder()
                 .subdomainIds(subdomainIdList)
                 .assetName(assetDomainName)
+                .firmId(firmId)
                 .id(assetId).build();
 
 
