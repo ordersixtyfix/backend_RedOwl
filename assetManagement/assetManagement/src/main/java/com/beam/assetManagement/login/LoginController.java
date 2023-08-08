@@ -37,10 +37,7 @@ public class LoginController {
             log.error("Authentication failed for user: {}", authRequest.getEmail());
             return new GenericResponse<UserDto>().setCode(401);
         }
-
         UserDto userDto = userService.getUserByEmail(authRequest.getEmail());
         return new GenericResponse<UserDto>().setCode(200).setData(userDto);
     }
-
-
 }

@@ -1,0 +1,12 @@
+
+y
+java:S1488`"\Immediately return this expression instead of assigning it to the temporary variable "role".(ß•‘»8î¤”°›1
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Òƒ©ùÿÿÿÿ8ï¤”°›1
+m
+java:S3655`"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(ß•‘»8ü¤”°›1
+d
+java:S3655T"HCall "user.isPresent()" or "!user.isEmpty()" before accessing the value.(´›ó18ü¤”°›1
+d
+java:S3655h"HCall "user.isPresent()" or "!user.isEmpty()" before accessing the value.(´›ó18ÚŒ˜°›1
+g
+java:S1124"EReorder the modifiers to comply with the Java Language Specification.(àåıùÿÿÿÿ8€¥”°›1

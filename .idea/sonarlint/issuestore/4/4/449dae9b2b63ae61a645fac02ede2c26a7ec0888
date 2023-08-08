@@ -1,0 +1,8 @@
+
+v	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ÍÒû¾8çÕö¯›1
+c
+java:S1874m"ARemove this use of "FilterSecurityInterceptor"; it is deprecated.(Šä‘Íıÿÿÿÿ8åóö¯›1
+c
+java:S1117ˆ"@Rename "objectMapper" which hides the field declared at line 46.(¡ôó‰ùÿÿÿÿ8†Öö¯›1
+c
+java:S1117"@Rename "objectMapper" which hides the field declared at line 46.(¡ôó‰ùÿÿÿÿ8šÖö¯›1

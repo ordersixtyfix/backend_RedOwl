@@ -1,5 +1,10 @@
 package com.beam.assetManagement.assets;
 
+import com.beam.assetManagement.Scans.AllResultData.AllResultsService;
+import com.beam.assetManagement.Scans.FtpData.FtpReport;
+import com.beam.assetManagement.Scans.FtpData.FtpReportRepository;
+import com.beam.assetManagement.Scans.FtpData.FtpService;
+import com.beam.assetManagement.Scans.MySqlData.MySqlService;
 import com.beam.assetManagement.assetRecon.AssetEnumerationService;
 import com.beam.assetManagement.assetRecon.IpData.IpData;
 import com.beam.assetManagement.assetRecon.IpData.IpDataService;
@@ -23,14 +28,13 @@ public class AssetController {
     private final AssetEnumerationService assetEnumerationService;
 
     private final AssetRepository assetRepository;
-
-
+    private final FtpService ftpService;
+    private final FtpReportRepository ftpReportRepository;
     private final IpDataService ipDataService;
-
-
+    private final MySqlService mySqlService;
     private final ServiceEnum serviceEnum;
     private final AssetService assetService;
-
+    private final AllResultsService allResultsService;
 
     @PostMapping("/create")
     public GenericResponse<String> createAsset(@RequestBody AssetRequest request) {
@@ -160,18 +164,82 @@ public class AssetController {
         } catch (Exception e) {
             return new GenericResponse<Long>().setCode(400);
         }
-
-
     }
 
+//    @GetMapping("/{ftpIpAddress}")
+//    public int testFtpConnection(@PathVariable String ftpIpAddress) throws IOException {
+//        int ftpfilecount = Integer.parseInt(ftpService.ftpScanTest(ftpIpAddress));
+//        return ftpfilecount;
+//    }ip
 
-    //TEST ENDPOINT
-    @PostMapping("test/{ipAddress}")
-    public boolean mysqltest(@PathVariable String ipAddress) {
-        boolean accessData = serviceEnum.testPostgreSQL(ipAddress);
-        return accessData;
+
+//@PostMapping("/scanselect/test/{ipAddress}")
+//public GenericResponse<?> scanResultGenericResponseTest(
+//        @PathVariable String ipAddress,
+//        @RequestParam(required = false) String scanType // New parameter to specify the scan type
+//) {
+//    try {
+//        DataBaseType dataBaseType = null;
+//        dataBaseType = DataBaseType.valueOf(scanType.toUpperCase());
+//        Object allResults = allResultsService.allScanner(ipAddress, dataBaseType, null);
+//
+//        return new GenericResponse<>().setCode(200).setData(allResults);
+//    } catch (Exception e) {
+//
+//        e.printStackTrace();
+//        return new GenericResponse<>().setCode(400);
+//    }
+//}
+
+    @PostMapping("/scanselect/{assetId}")
+    public GenericResponse<?> scanResultGenericResponse(
+            @PathVariable String assetId,
+            @RequestParam(required = false) String scanType
+    ) {
+        try {
+            Object allResults = allResultsService.allScanner(assetId,scanType);
+            return new GenericResponse<>().setCode(200).setData(allResults);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new GenericResponse<>().setCode(522);
+        }
+    }
+//    @PostMapping("/{ftpIpAddress}")
+//    public GenericResponse <FtpReport> testFtpConnection(@PathVariable String ftpIpAddress) throws IOException {
+//        try{
+//            FtpReport ftpReport = ftpService.ftpScanTest(ftpIpAddress);
+//            return new GenericResponse<FtpReport>().setCode(200).setData(ftpReport);
+//        }catch (Exception e){
+//            return new GenericResponse<FtpReport>().setCode(400);
+//        }
+//    }
+    @GetMapping("/get/ftp")
+    public List<FtpReport> getAllFtpReports() {
+        return ftpService.getAllFtpReports();
     }
 
+//    @PostMapping ("/ftp/{assetId}")
+//    public GenericResponse<FtpReport> ftpScan(@PathVariable String assetId) throws IOException {
+//        try{
+//        FtpReport ftpReportList = ftpService.ftpResult(assetId).getData();
+//        return new GenericResponse<FtpReport>().setCode(200).setData(ftpReportList);
+//        }catch (SocketTimeoutException e){
+//            return new GenericResponse<FtpReport>().setCode(522);
+//        }
+//    }
+
+
+//    @PostMapping("test/{ipAddress}")
+//    public PostGreSqlReport postGreSQLTest(@PathVariable String ipAddress) {
+//        PostGreSqlReport postGreSqlReport = PostGreService.testPostgreSQL(ipAddress);
+//        return postGreSqlReport;
+//    }
+
+//    @PostMapping("/test/{ipAddress}")
+//    public GenericResponse<String> mysqltest(@PathVariable String ipAddress) throws IOException {
+//        boolean accessData = serviceEnum.testMysql(ipAddress);
+//        return new GenericResponse<String>().setCode(200).setData(String.valueOf(accessData));
+//    }
 
     @GetMapping("get/{assetId}")
     public GenericResponse<String> getAssetName(@PathVariable String assetId) {
