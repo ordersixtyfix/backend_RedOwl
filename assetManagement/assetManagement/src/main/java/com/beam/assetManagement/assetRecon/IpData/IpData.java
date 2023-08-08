@@ -1,6 +1,7 @@
 package com.beam.assetManagement.assetRecon.IpData;
 
 import com.beam.assetManagement.assetRecon.Base.Base;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -11,11 +12,13 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "IpData")
 @TypeAlias("IpData")
 @SuperBuilder
 public class IpData extends Base {
+
 
     private String assetId;
 
@@ -27,6 +30,10 @@ public class IpData extends Base {
 
     private List<AccessData> accessData;
 
+    private String firmId;
+
+
+
     public void addShareSubdomains(String subdomain) {
         subdomainShareIp.add(subdomain);
     }
@@ -34,4 +41,8 @@ public class IpData extends Base {
     public void insertPortData(List<SubdomainPortData> subdomainPortDataList) {
         this.PortScanData = subdomainPortDataList;
     }
+
+
+
+
 }

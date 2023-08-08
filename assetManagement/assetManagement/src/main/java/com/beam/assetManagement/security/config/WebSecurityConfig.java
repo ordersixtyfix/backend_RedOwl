@@ -95,7 +95,6 @@ public class WebSecurityConfig {
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/user/**")).authenticated();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/switch-user")).authenticated();
                     auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/firm/**")).authenticated();
-                    auth.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/asset/{ftpIpAddress}")).authenticated();
 
                     auth.anyRequest().authenticated();
                 })

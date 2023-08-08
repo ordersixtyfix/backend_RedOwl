@@ -19,7 +19,7 @@ public class FirmController {
     @PostMapping()
     public GenericResponse setFirm(@RequestBody FirmRequest firmRequest) {
         try {
-            firmService.CreateFirm(firmRequest);
+            firmService.createFirm(firmRequest);
 
             return new GenericResponse().setCode(200);
         } catch (Exception e) {
@@ -27,23 +27,49 @@ public class FirmController {
         }
     }
 
-    @GetMapping("{userId}")
-    public GenericResponse<List<Firm>> getAllFirms(@PathVariable String userId){
-        try{
 
-            String role =userService.isSuperUser(userId);
-            if(role=="SUPER_USER"){
+    @PostMapping("/{userId}/{firmId}")
+    public GenericResponse deleteFirm(@PathVariable String firmId, @PathVariable String userId) {
+        try {
+            firmService.deleteFirm(firmId, userId);
+            return new GenericResponse().setCode(200);
+        } catch (Exception e) {
+            return new GenericResponse().setCode(400);
+        }
+    }
+
+    @GetMapping("{userId}")
+    public GenericResponse<List<Firm>> getAllFirms(@PathVariable String userId) {
+        try {
+
+            String role = userService.isSuperUser(userId);
+            if (role == "SUPER_USER") {
                 List<Firm> firmList = firmService.getAllFirms();
                 return new GenericResponse<List<Firm>>().setCode(200).setData(firmList);
-            }
-            else {
+            } else {
                 return new GenericResponse().setCode(400);
             }
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return new GenericResponse().setCode(400);
         }
+    }
+
+
+    @GetMapping("firm-name/{firmId}")
+    public GenericResponse<String> getFirmName(@PathVariable String firmId) {
+
+
+        try {
+            String firmName = firmService.getFirmName(firmId);
+            return new GenericResponse<String>().setCode(200).setData(firmName);
+
+
+        } catch (Exception e) {
+            return new GenericResponse().setCode(400);
+        }
+
     }
 
 }

@@ -72,10 +72,10 @@ public class AssetController {
 
 
     //SCAN SPECIFIC ASSET BY ASSET NAME
-    @PostMapping("/scan/{assetId}")
-    public GenericResponse<Optional<Asset>> getAssetData(@PathVariable String assetId) throws Exception {
+    @PostMapping("/scan/{assetId}/{firmId}")
+    public GenericResponse<Optional<Asset>> getAssetData(@PathVariable String assetId, @PathVariable String firmId) throws Exception {
         try {
-            assetEnumerationService.setAsset(assetId);
+            assetEnumerationService.setAsset(assetId,firmId);
             return new GenericResponse<Optional<Asset>>().setCode(200);
         } catch (Exception e) {
             return new GenericResponse<Optional<Asset>>().setCode(400);
@@ -109,12 +109,16 @@ public class AssetController {
         } catch (Exception e) {
             return new GenericResponse<List<IpData>>().setCode(400);
         }
+
+
     }
 
 
     //GET ALL ASSET DATA
-    @GetMapping("/get/assetdata/{firmId}/{userId}")
-    public GenericResponse<Page<Asset>> getAsset(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size, @PathVariable String firmId,@PathVariable String userId) {
+    @GetMapping("/get/assetdata/{userId}/{firmId}")
+    public GenericResponse<Page<Asset>> getAsset(@RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "2") int size,
+                                                 @PathVariable String userId,@PathVariable String firmId) {
 
 
         try {
@@ -141,19 +145,22 @@ public class AssetController {
     }
 
 
-    @GetMapping("/get/asset-count/{userId}")
-    public GenericResponse<Long> getAssetCount(@PathVariable String userId) {
+    @GetMapping("/get/asset-count/{userId}/{firmId}")
+    public GenericResponse<Long> getAssetCount(@PathVariable String firmId, @PathVariable String userId) {
         try {
-            return new GenericResponse<Long>().setCode(200).setData(assetService.getAssetCount(userId));
+            return new GenericResponse<Long>().setCode(200).setData(assetService.getAssetCount(firmId,userId));
         } catch (Exception e) {
             return new GenericResponse<Long>().setCode(400);
         }
+
+
     }
 
-    @GetMapping("/get/ip-count")
-    public GenericResponse<Long> getIpCount() {
+    @GetMapping("/get/ip-count/{firmId}")
+    public GenericResponse<Long> getIpCount(@PathVariable String firmId) {
         try {
-            return new GenericResponse<Long>().setCode(200).setData(assetService.getIpCount());
+
+            return new GenericResponse<Long>().setCode(200).setData(assetService.getIpCount(firmId));
         } catch (Exception e) {
             return new GenericResponse<Long>().setCode(400);
         }
@@ -243,5 +250,9 @@ public class AssetController {
         } catch (Exception e) {
             return new GenericResponse<String>().setCode(400);
         }
+
+
     }
+
+
 }

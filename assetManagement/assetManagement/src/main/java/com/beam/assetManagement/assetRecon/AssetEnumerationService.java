@@ -1,6 +1,7 @@
     package com.beam.assetManagement.assetRecon;
 
     import com.beam.assetManagement.assetRecon.IpData.IpData;
+    import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
     import com.beam.assetManagement.assetRecon.IpData.IpDataService;
     import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
     import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainDataService;
@@ -10,6 +11,7 @@
     import com.beam.assetManagement.assets.AssetRepository;
     import com.beam.assetManagement.utils.RegexMatcherService;
     import lombok.RequiredArgsConstructor;
+    import lombok.extern.slf4j.Slf4j;
     import org.apache.commons.net.whois.WhoisClient;
     import org.springframework.stereotype.Component;
 
@@ -23,6 +25,7 @@
 
     @Component
     @RequiredArgsConstructor
+    @Slf4j
 
 
     public class AssetEnumerationService {
@@ -39,13 +42,15 @@
 
         private final IpDataService ipDataService;
 
+        private final IpDataRepository ipDataRepository;
 
 
 
 
 
 
-        public List<String> setAsset(String assetId) throws Exception {
+
+        public List<String> setAsset(String assetId,String firmId) throws Exception {
             Optional<Asset> asset = assetRepository.findById(assetId);
             Asset testAsset = asset.get();
             String assetDomain = testAsset.getAssetDomain();
@@ -61,14 +66,16 @@
             List<String> registrarServer = getRegistrarData(modifiedDomain);
             Set<String> uniqueSubdomains = new HashSet<>();
             Set<String> uniqueSubdomainIds = new HashSet<>();
-            //Set<String> uniqueIpAddresses = new HashSet<>();
 
+
+            List<String> newPorts = ipDataService.detectPort(assetId);
+            log.info(newPorts.toString());
 
             subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomains,uniqueSubdomainIds);
-            subdomainDataService.SaveSubdomainData(uniqueSubdomainIds,assetId);
+            subdomainDataService.SaveSubdomainData(uniqueSubdomainIds,assetId,firmId);
 
             ipDataService.getIpFromDataDetailsObject(subdomainDataDetailService.getDataDetailsObjectById(assetId),assetId);
-            ipDataService.insertPortScanToObject(assetId);
+            ipDataService.insertPortScanToObject(assetId,firmId);
 
 
             AssetData assetData = new AssetData(registrarServer, nameServers);

@@ -14,4 +14,6 @@ public class GenericResponse<T> {
     private int code;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
+
+
 }

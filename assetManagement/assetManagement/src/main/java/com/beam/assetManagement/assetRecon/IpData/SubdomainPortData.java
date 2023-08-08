@@ -15,8 +15,4 @@ public class SubdomainPortData {
     private String portService;
 
 
-
-
-
-
 }

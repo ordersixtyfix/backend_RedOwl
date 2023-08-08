@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Port Status Update</title>
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .header {
+      text-align: center;
+      padding: 20px;
+      background-color: #007BFF;
+      color: #fff;
+      font-size: 24px;
+      box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+    }
+    .logo {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .logo img {
+      max-width: 150px;
+    }
+    .container {
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+    }
+    .project-name {
+      color: #182734;
+    }
+    .status-list {
+      margin-top: 20px;
+      padding-left: 20px;
+    }
+    .status-item {
+      margin-bottom: 10px;
+    }
+    .status-item strong {
+      font-weight: bold;
+      color: #007BFF;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    ul li {
+      list-style-type: disc;
+      margin-left: 10px;
+    }
+    .paired-ports {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .paired-port {
+      flex-basis: calc(50% - 10px);
+      margin-right: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  Port Status Update for Asset: <span class="project-name" th:text="${assetName}"></span>
+</div>
+<div class="logo">
+  <img src="static/beamlogo.png" alt="Logo">
+</div>
+<div class="container">
+  <p>Hello,</p>
+  <p>Here is the latest update on port statuses:</p>
+  <div class="status-list">
+    <div class="status-item">
+      <strong>Detected Open Ports:</strong>
+      <ul>
+        <li th:each="pair : ${pairedNewPorts}">
+          <div class="paired-ports">
+            <div class="paired-port" th:each="port : ${pair}" th:text="${port}"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="status-item" th:if="${pairedClosedPorts.size() > 0}">
+      <strong>Detected Closed Ports:</strong>
+      <ul>
+        <li th:each="pair : ${pairedClosedPorts}">
+          <div class="paired-ports">
+            <div class="paired-port" th:each="port : ${pair}" th:text="${port}"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -22,5 +22,7 @@ public class SubdomainData extends Base {
 
     private Set<String> subdomainIds;
 
+    private String firmId;
+
 
 }

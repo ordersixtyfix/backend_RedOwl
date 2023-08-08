@@ -15,7 +15,7 @@ public class RegistrationController {
 
     private RegistrationService registrationService;
 
-    @PostMapping("/create")
+    @PostMapping()
     public GenericResponse<String> register(@RequestBody RegistrationRequest request){
         try{
 
