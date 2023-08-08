@@ -26,7 +26,7 @@ public class IpDataService {
         return ipAddressString;
 
     }
-
+// burda processBuilder yerine kütüphane kullan
     public List<SubdomainPortData> getPortData(String subdomain) throws IOException {
 
         String regexPort = "(\\d+\\/\\w+)\\s+(\\w+)\\s+([\\w\\/-]+)";
@@ -82,7 +82,7 @@ public class IpDataService {
                         }
                     }
                 } else {
-                    //IpData ipData = new IpData(ipAddress, subdomain, assetId);
+
                     IpData ipData = IpData.builder().ipAddress(ipAddress).assetId(assetId)
                             .subdomainShareIp(new HashSet<>()).accessData(new ArrayList<>()).build();
 
@@ -114,7 +114,6 @@ public class IpDataService {
         }
 
     }
-
 
     public List<IpData> getIpDataObjectList(String assetId) {
         return ipDataRepository.findByAssetId(assetId);

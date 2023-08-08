@@ -29,7 +29,7 @@ public class Asset extends Base {
 
     private AssetData assetData;
 
-    private String userId;
+    private String firmId;
 
 
 }

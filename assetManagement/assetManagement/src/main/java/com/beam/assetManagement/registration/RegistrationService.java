@@ -22,7 +22,8 @@ public class RegistrationService {
             if (request.getFirstName().isEmpty() ||
                     request.getLastName().isEmpty()||
                     request.getPassword().isEmpty() ||
-                    request.getEmail().isEmpty()) {
+                    request.getEmail().isEmpty() ||
+                    request.getFirmId().isEmpty()) {
                 throw new IllegalArgumentException("All fields in the RegistrationRequest must be provided.");
             }
 
@@ -34,6 +35,7 @@ public class RegistrationService {
                     .firstName(request.getFirstName())
                     .email(request.getEmail())
                     .password(request.getPassword())
+                    .firmId(request.getFirmId())
                     .appUserRole(AppUserRole.USER).build());
 
 
