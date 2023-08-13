@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 @CrossOrigin("localhost:4200")
@@ -21,6 +22,10 @@ public interface AssetRepository extends MongoRepository<Asset, Integer> {
     Page<Asset> findByFirmId(String userId, PageRequest pageRequest);
 
     List<Asset> findByFirmId(String userId);
+
+    Set<String> findDistinctAssetLocationByFirmId(String firmId);
+
+    Long countAssetByAssetLocation(String location);
 
 
 

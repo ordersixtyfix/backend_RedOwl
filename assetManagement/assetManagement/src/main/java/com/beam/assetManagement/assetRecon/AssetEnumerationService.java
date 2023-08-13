@@ -59,7 +59,7 @@
             assetDomainName = assetName;
 
 
-            Asset savedAsset = assetRepository.findById(testAsset.getId()).orElse(null);
+
             String modifiedDomain = assetDomain.substring(4);
 
             List<String> nameServers = getNameServers(modifiedDomain);
@@ -68,21 +68,19 @@
             Set<String> uniqueSubdomainIds = new HashSet<>();
 
 
-            List<String> newPorts = ipDataService.detectPort(assetId);
-            log.info(newPorts.toString());
-
+            ipDataService.detectPort(assetId);
             subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomains,uniqueSubdomainIds);
             subdomainDataService.SaveSubdomainData(uniqueSubdomainIds,assetId,firmId);
-
             ipDataService.getIpFromDataDetailsObject(subdomainDataDetailService.getDataDetailsObjectById(assetId),assetId);
             ipDataService.insertPortScanToObject(assetId,firmId);
 
 
+
             AssetData assetData = new AssetData(registrarServer, nameServers);
-            savedAsset.setAssetData(assetData);
+            testAsset.setAssetData(assetData);
 
 
-            assetRepository.save(savedAsset);
+            assetRepository.save(testAsset);
             return null;
 
         }

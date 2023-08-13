@@ -4,17 +4,25 @@ import com.beam.assetManagement.assetRecon.IpData.IpDataService;
 import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
 import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainData;
 import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SubdomainDataDetailService {
 
     private final SubdomainRepository subdomainRepository;
@@ -25,49 +33,43 @@ public class SubdomainDataDetailService {
 
     public List<String> getSubdomains(String domainName, Set<String> uniqueSubdomains, Set<String> uniqueSubdomainIds)
             throws IOException {
-        Reader reader = AmassCommandOutput(domainName);
+
+        subdomainFinder(uniqueSubdomains,domainName);
+
         List<String> subdomains = new ArrayList<>();
         Set<SubdomainDataDetails> subdomainDataDetailsList = new HashSet<>();
-        String line;
-        while ((line = ((BufferedReader) reader).readLine()) != null) {
-            line = line.trim();
-            if (line.isEmpty()) {
-                break;
-            }
-            List<SubdomainPortData> subdomainPortData = ipDataService.getPortData(line);
-            if (!uniqueSubdomains.contains(line)) {
-                if (subdomainPortData.isEmpty()) {
-                    if(subdomainDetailsRepository.existsBySubdomain(line)){
-                        HostDownAndExist(uniqueSubdomainIds,line);
+
+        for (String subdomain : uniqueSubdomains) {
+            List<SubdomainPortData> subdomainPortData = ipDataService.getPortData(subdomain);
+
+            if (subdomainPortData.isEmpty()) {
+                if (subdomainDetailsRepository.existsBySubdomain(subdomain)) {
+                    HostDownAndExist(uniqueSubdomainIds, subdomain);
+                } else {
+                    HostDownAndNotExist(uniqueSubdomainIds, subdomain, subdomainDataDetailsList);
+                }
+            } else {
+                String redirectDomain = checkSubdomainRedirect(subdomain);
+                if (redirectDomain != null) {
+                    String extractedRedirectDomain = ExtractRedirectedDomain(redirectDomain);
+                    if (!redirectDomain.matches(".\\b" + domainName + "\\b.")) {
+                        List<String> redirectedSubdomains = getSubdomains(extractedRedirectDomain, uniqueSubdomains,
+                                uniqueSubdomainIds);
+                        subdomains.addAll(redirectedSubdomains);
+                    }
+                    if (subdomainDetailsRepository.existsBySubdomain(subdomain)) {
+                        HostUpAndExistRedirected(uniqueSubdomainIds, subdomain, redirectDomain);
                     } else {
-                        HostDownAndNotExist(uniqueSubdomainIds,line,subdomainDataDetailsList);
+                        HostUpAndNotExistRedirected(uniqueSubdomainIds, subdomain, redirectDomain,
+                                subdomainDataDetailsList);
                     }
                 } else {
-                    String redirectDomain = checkSubdomainRedirect(line);
-                    if (redirectDomain != null) {
-                        String extractedRedirectDomain = ExtractRedirectedDomain(redirectDomain);
-                        if (!redirectDomain.matches(".*\\b" + domainName + "\\b.*")) {
-                            List<String> redirectedSubdomains = getSubdomains(extractedRedirectDomain, uniqueSubdomains,
-                                    uniqueSubdomainIds);
-                            subdomains.addAll(redirectedSubdomains);
-                        }
-                        if(subdomainDetailsRepository.existsBySubdomain(line)){
-                            HostUpAndExistRedirected(uniqueSubdomainIds,line,redirectDomain);
-                        }
-                        else {
-                            HostUpAndNotExistRedirected(uniqueSubdomainIds,line,redirectDomain,
-                                    subdomainDataDetailsList);
-                        }
+                    subdomains.add(subdomain);
+                    if (subdomainDetailsRepository.existsBySubdomain(subdomain)) {
+                        HostUpAndExistNotRedirected(uniqueSubdomainIds, subdomain);
                     } else {
-                        subdomains.add(line);
-                        if(subdomainDetailsRepository.existsBySubdomain(line)){
-                            HostUpAndExistNotRedirected(uniqueSubdomainIds,line);
-                        }
-                        else {
-                            HostUpAndNotExistNotRedirected(uniqueSubdomainIds,line,
-                                    subdomainDataDetailsList);
-
-                        }
+                        HostUpAndNotExistNotRedirected(uniqueSubdomainIds, subdomain,
+                                subdomainDataDetailsList);
                     }
                 }
             }
@@ -77,19 +79,92 @@ public class SubdomainDataDetailService {
     }
 
 
+    public void subdomainFinder(Set<String> uniqueSubdomains,String domain) throws IOException {
+        amassSearch(uniqueSubdomains,domain);
+        crtShSearch(uniqueSubdomains,domain);
+        shodanSearch(uniqueSubdomains,domain);
+    }
 
 
-    public BufferedReader AmassCommandOutput(String domain) throws IOException {
+    public void shodanSearch(Set<String>uniqueSubDomains,String domain){
+        String apiKey = System.getenv("SHODAN_API_KEY");
+        String apiUrl = "https://api.shodan.io/dns/domain/" + domain + "?key=" + apiKey;
+        List<String> webTechnologies = null;
+        String asn = null;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet httpGet = new HttpGet(apiUrl);
+
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                String jsonResponse = EntityUtils.toString(response.getEntity());
+                JsonNode jsonArray = objectMapper.readTree(jsonResponse);
+
+                for (JsonNode jsonNode : jsonArray) {
+                    asn = jsonNode.get("asn").asText();
+                    JsonNode componentsNode = jsonNode.get("components");
+                    if (componentsNode != null && componentsNode.isArray()) {
+                        for (JsonNode componentNode : componentsNode) {
+                            webTechnologies.add(componentNode.asText());
+                            
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        log.info(webTechnologies.toString());
+        log.info(asn);
+    }
+
+
+
+    public void crtShSearch(Set<String>uniqueSubDomains,String domain) {
+        String apiUrl = "https://crt.sh/?q=%25." + domain + "&output=json";
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet httpGet = new HttpGet(apiUrl);
+
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                String jsonResponse = EntityUtils.toString(response.getEntity());
+                JsonNode jsonArray = objectMapper.readTree(jsonResponse);
+
+                for (JsonNode jsonNode : jsonArray) {
+                    String commonName = jsonNode.get("common_name").asText();
+                    String nameValue = jsonNode.get("name_value").asText();
+                    uniqueSubDomains.add(commonName);
+                    uniqueSubDomains.add(nameValue);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void amassSearch(Set<String> uniqueSubdomains,String domain) throws IOException {
         String amassPath = "C:\\amass_Windows_amd64\\amass.exe";
 
         ProcessBuilder processBuilder = new ProcessBuilder(amassPath, "enum", "-passive", "-d", domain);
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-        return  reader;
-
-
+        String line;
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            if (line.isEmpty()) {
+                break;
+            }
+            uniqueSubdomains.add(line);
+        }
     }
 
     public Set<SubdomainDataDetails> getDataDetailsObjectById(String assetId){

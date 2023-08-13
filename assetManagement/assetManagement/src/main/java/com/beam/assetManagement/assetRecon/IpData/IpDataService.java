@@ -147,58 +147,42 @@ public class IpDataService {
             for (IpData ipData : ipDataList) {
                 String ipAddress = ipData.getIpAddress();
                 List<SubdomainPortData> portDataList = getPortData(ipAddress);
-
-
                 for (SubdomainPortData subdomainPortData : portDataList) {
-
                     String port = subdomainPortData.getPort();
-
                     boolean found = false;
                     boolean notExist = true;
-
                     for (SubdomainPortData existingData : ipData.getPortScanData()) {
+
 
                         if (existingData.getPort().equals(port)) {
                             found = true;
                             notExist = false;
                             break;
                         }
-
                     }
                     if (!found) {
                         log.info("MISSING PORT: " + port);
                         newPorts.add(port);
                         newPorts.add(ipAddress);
                     } else if (notExist) {
-
                         closedPorts.add(port);
                         closedPorts.add(ipAddress);
                     }
                 }
-
             }
-
         } else {
             log.info("NO DATA FOUND");
         }
-
         if (!newPorts.isEmpty() || !closedPorts.isEmpty()) {
-            emailSenderService.sendPortStatusEmail(newPorts,closedPorts,assetName);
+            emailSenderService.sendPortStatusEmail(newPorts, closedPorts, assetName);
         }
-
         return newPorts;
     }
-
 
 
     public List<IpData> getIpDataObjectList(String assetId) {
         return ipDataRepository.findByAssetId(assetId);
     }
-
-
-
-
-
 
 
 }
