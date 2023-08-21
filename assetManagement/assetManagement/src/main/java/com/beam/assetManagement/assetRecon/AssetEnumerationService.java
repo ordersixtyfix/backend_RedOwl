@@ -7,7 +7,6 @@
     import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainDataService;
     import com.beam.assetManagement.assetRecon.SubdomainDataDetails.SubdomainDataDetailService;
     import com.beam.assetManagement.assets.Asset;
-    import com.beam.assetManagement.assets.AssetData;
     import com.beam.assetManagement.assets.AssetRepository;
     import com.beam.assetManagement.utils.RegexMatcherService;
     import lombok.RequiredArgsConstructor;
@@ -59,30 +58,33 @@
             assetDomainName = assetName;
 
 
-            Asset savedAsset = assetRepository.findById(testAsset.getId()).orElse(null);
+
             String modifiedDomain = assetDomain.substring(4);
 
-            List<String> nameServers = getNameServers(modifiedDomain);
-            List<String> registrarServer = getRegistrarData(modifiedDomain);
-            Set<String> uniqueSubdomains = new HashSet<>();
+            //List<String> nameServers = getNameServers(modifiedDomain);
+            //List<String> registrarServer = getRegistrarData(modifiedDomain);
+            //Set<String> uniqueSubdomains = new HashSet<>();
             Set<String> uniqueSubdomainIds = new HashSet<>();
 
 
-            List<String> newPorts = ipDataService.detectPort(assetId);
-            log.info(newPorts.toString());
+            ipDataService.detectPort(assetId);
+            //Set<String> processedSubdomains = new HashSet<>();
+            subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomainIds);
 
-            subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomains,uniqueSubdomainIds);
             subdomainDataService.SaveSubdomainData(uniqueSubdomainIds,assetId,firmId);
 
             ipDataService.getIpFromDataDetailsObject(subdomainDataDetailService.getDataDetailsObjectById(assetId),assetId);
+
             ipDataService.insertPortScanToObject(assetId,firmId);
 
 
-            AssetData assetData = new AssetData(registrarServer, nameServers);
-            savedAsset.setAssetData(assetData);
 
 
-            assetRepository.save(savedAsset);
+            //AssetData assetData = new AssetData(registrarServer, nameServers);
+            //testAsset.setAssetData(assetData);
+
+
+            assetRepository.save(testAsset);
             return null;
 
         }
@@ -107,7 +109,7 @@
                 nameServers.add(trimmedNameServer);
             }
 
-            System.out.println(nameServers);
+
 
             return nameServers;
         }

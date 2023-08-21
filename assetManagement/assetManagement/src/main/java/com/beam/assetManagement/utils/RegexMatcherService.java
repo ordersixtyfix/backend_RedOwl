@@ -70,7 +70,7 @@ public class RegexMatcherService {
 
             registrarData.addAll(Arrays.asList(regData1,regData2, regData3,regData4,regData5,regData6,regData7,regData8));
 
-            System.out.println(registrarData);
+
         }
         return registrarData;
 
