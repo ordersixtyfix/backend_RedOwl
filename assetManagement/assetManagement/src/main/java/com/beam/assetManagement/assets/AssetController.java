@@ -1,13 +1,15 @@
 package com.beam.assetManagement.assets;
 
-import com.beam.assetManagement.Scans.AllResultData.AllResultsService;
-import com.beam.assetManagement.Scans.FtpData.FtpReport;
-import com.beam.assetManagement.Scans.FtpData.FtpService;
-import com.beam.assetManagement.Scans.MySqlData.MySqlService;
 import com.beam.assetManagement.assetRecon.AssetEnumerationService;
 import com.beam.assetManagement.assetRecon.IpData.IpData;
 import com.beam.assetManagement.assetRecon.IpData.IpDataService;
-import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceEnum;
+import com.beam.assetManagement.assetRecon.Scans.AllResultData.AllResultsService;
+import com.beam.assetManagement.assetRecon.Scans.FtpData.FtpReport;
+import com.beam.assetManagement.assetRecon.Scans.FtpData.FtpService;
+import com.beam.assetManagement.assetRecon.Scans.MySqlData.MySqlService;
+import com.beam.assetManagement.assetRecon.Scans.PostgreSqlData.PostGreService;
+import com.beam.assetManagement.assetRecon.Scans.PostgreSqlData.PostGreSqlReport;
+import com.beam.assetManagement.assetRecon.Scans.ScanRequest;
 import com.beam.assetManagement.common.GenericResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +30,9 @@ public class AssetController {
     private final FtpService ftpService;
     private final IpDataService ipDataService;
     private final MySqlService mySqlService;
-    private final ServiceEnum serviceEnum;
+
+    private final PostGreService postGreService;
+
     private final AssetService assetService;
     private final AllResultsService allResultsService;
 
@@ -165,80 +169,9 @@ public class AssetController {
         }
     }
 
-//    @GetMapping("/{ftpIpAddress}")
-//    public int testFtpConnection(@PathVariable String ftpIpAddress) throws IOException {
-//        int ftpfilecount = Integer.parseInt(ftpService.ftpScanTest(ftpIpAddress));
-//        return ftpfilecount;
-//    }ip
 
 
-//@PostMapping("/scanselect/test/{ipAddress}")
-//public GenericResponse<?> scanResultGenericResponseTest(
-//        @PathVariable String ipAddress,
-//        @RequestParam(required = false) String scanType // New parameter to specify the scan type
-//) {
-//    try {
-//        DataBaseType dataBaseType = null;
-//        dataBaseType = DataBaseType.valueOf(scanType.toUpperCase());
-//        Object allResults = allResultsService.allScanner(ipAddress, dataBaseType, null);
-//
-//        return new GenericResponse<>().setCode(200).setData(allResults);
-//    } catch (Exception e) {
-//
-//        e.printStackTrace();
-//        return new GenericResponse<>().setCode(400);
-//    }
-//}
 
-    @PostMapping("/scanselect/{assetId}")
-    public GenericResponse<?> scanResultGenericResponse(
-            @PathVariable String assetId,
-            @RequestParam(required = false) String scanType
-    ) {
-        try {
-            Object allResults = allResultsService.allScanner(assetId,scanType);
-            return new GenericResponse<>().setCode(200).setData(allResults);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new GenericResponse<>().setCode(522);
-        }
-    }
-//    @PostMapping("/{ftpIpAddress}")
-//    public GenericResponse <FtpReport> testFtpConnection(@PathVariable String ftpIpAddress) throws IOException {
-//        try{
-//            FtpReport ftpReport = ftpService.ftpScanTest(ftpIpAddress);
-//            return new GenericResponse<FtpReport>().setCode(200).setData(ftpReport);
-//        }catch (Exception e){
-//            return new GenericResponse<FtpReport>().setCode(400);
-//        }
-//    }
-    @GetMapping("/get/ftp")
-    public List<FtpReport> getAllFtpReports() {
-        return ftpService.getAllFtpReports();
-    }
-
-//    @PostMapping ("/ftp/{assetId}")
-//    public GenericResponse<FtpReport> ftpScan(@PathVariable String assetId) throws IOException {
-//        try{
-//        FtpReport ftpReportList = ftpService.ftpResult(assetId).getData();
-//        return new GenericResponse<FtpReport>().setCode(200).setData(ftpReportList);
-//        }catch (SocketTimeoutException e){
-//            return new GenericResponse<FtpReport>().setCode(522);
-//        }
-//    }
-
-
-//    @PostMapping("test/{ipAddress}")
-//    public PostGreSqlReport postGreSQLTest(@PathVariable String ipAddress) {
-//        PostGreSqlReport postGreSqlReport = PostGreService.testPostgreSQL(ipAddress);
-//        return postGreSqlReport;
-//    }
-
-//    @PostMapping("/test/{ipAddress}")
-//    public GenericResponse<String> mysqltest(@PathVariable String ipAddress) throws IOException {
-//        boolean accessData = serviceEnum.testMysql(ipAddress);
-//        return new GenericResponse<String>().setCode(200).setData(String.valueOf(accessData));
-//    }
 
     @GetMapping("get/{assetId}")
     public GenericResponse<String> getAssetName(@PathVariable String assetId) {
@@ -251,6 +184,42 @@ public class AssetController {
         }
 
 
+    }
+
+
+
+
+
+    @PostMapping("/scanselect/{assetId}/{firmId}")
+    public GenericResponse<?> scanResultGenericResponse(
+            @PathVariable String assetId, @PathVariable String firmId,
+            @RequestBody ScanRequest scanType
+    ) {
+        try {
+            Object allResults = allResultsService.allScanner(assetId, firmId, scanType);
+            return new GenericResponse<>().setCode(200).setData(allResults);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new GenericResponse<>().setCode(522);
+        }
+    }
+
+    @GetMapping("/get/ftp/{assetId}")
+    public GenericResponse<List<FtpReport>> getAllFtpReports(@PathVariable String assetId) {
+        try {
+            return new GenericResponse<List<FtpReport>>().setCode(200).setData(ftpService.findByAssetId(assetId));
+        } catch (Exception e) {
+            return new GenericResponse<List<FtpReport>>().setCode(400);
+        }
+    }
+
+    @GetMapping("/get/postgresql/{assetId}")
+    public GenericResponse<List<PostGreSqlReport>> getAllPostgresqlReports(@PathVariable String assetId) {
+        try {
+            return new GenericResponse<List<PostGreSqlReport>>().setCode(200).setData(postGreService.findByAssetId(assetId));
+        } catch (Exception e) {
+            return new GenericResponse<List<PostGreSqlReport>>().setCode(400);
+        }
     }
 
 
