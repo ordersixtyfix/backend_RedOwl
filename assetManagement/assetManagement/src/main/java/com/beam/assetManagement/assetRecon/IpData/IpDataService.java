@@ -26,6 +26,7 @@ import java.net.UnknownHostException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -306,37 +307,43 @@ public class IpDataService {
             for (IpData ipData : ipDataList) {
                 String ipAddress = ipData.getIpAddress();
                 List<SubdomainPortData> portDataList = getPortData(ipAddress);
+
+                List<SubdomainPortData> existingPortDataList = ipData.getPortScanData();
+                List<String> existingPorts = existingPortDataList.stream()
+                        .map(SubdomainPortData::getPort)
+                        .collect(Collectors.toList());
+
                 for (SubdomainPortData subdomainPortData : portDataList) {
                     String port = subdomainPortData.getPort();
-                    List<SubdomainPortData> existingPortData = ipData.getPortScanData();
-                    if (existingPortData != null) {
-                        boolean portFound = false;
-                        boolean portNotExists = true;
 
-                        for(SubdomainPortData existingData : existingPortData) {
-                            if (existingData.getPort().equals(port)) {
-                                portFound = true;
-                                portNotExists = false;
-                                break;
-                            }
-                        }
-
-                        if (!portFound && portNotExists) {
-                            closedPorts.add(port);
-                            closedPorts.add(ipAddress);
-                        }
+                    if (!existingPorts.contains(port)) {
+                        log.info("MISSING PORT: " + port);
+                        newPorts.add(port);
+                        newPorts.add(ipAddress);
                     }
+                }
 
+                for (SubdomainPortData existingData : existingPortDataList) {
+                    String port = existingData.getPort();
+
+                    if (!portDataList.stream().anyMatch(data -> data.getPort().equals(port))) {
+                        log.info("CLOSED PORT: " + port);
+                        closedPorts.add(port);
+                        closedPorts.add(ipAddress);
+                    }
                 }
             }
         } else {
             log.info("NO DATA FOUND");
         }
+
         if (!newPorts.isEmpty() || !closedPorts.isEmpty()) {
             emailSenderService.sendPortStatusEmail(newPorts, closedPorts, assetName);
         }
+
         return newPorts;
     }
+
 
 
     public List<IpData> getIpDataObjectList(String assetId) {

@@ -93,7 +93,37 @@ public class SubdomainDataDetailService {
         amassSearch(uniqueSubdomains, domain);
         crtShSearch(uniqueSubdomains, domain);
         shodanSearch(uniqueSubdomains, domain);
+
         return uniqueSubdomains;
+    }
+
+
+
+    public void subFinderSearch(Set<String> uniqueSubdomains, String domain) throws IOException {
+        ProcessBuilder processBuilder = new ProcessBuilder("subfinder", "-d", domain);
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+        String line;
+        boolean capturing = false;  // Flag to indicate when to start capturing lines
+
+        while ((line = reader.readLine()) != null) {
+
+            if (line.contains("[0m] Found")) {
+                break;
+            }
+            if (line.contains("Enumerating subdomains for")) {
+                capturing = true;  // Start capturing lines
+                continue;
+            }
+
+            if (capturing) {
+                uniqueSubdomains.add(line);
+            }
+        }
+
+        reader.close();
     }
 
 
