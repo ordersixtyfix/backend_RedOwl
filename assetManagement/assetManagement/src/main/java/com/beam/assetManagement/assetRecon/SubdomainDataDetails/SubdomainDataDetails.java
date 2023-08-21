@@ -25,6 +25,8 @@ public class SubdomainDataDetails extends Base {
 
     private boolean isHostDown = false;
 
+    private boolean isSSLValid = false;
+
 
 
 

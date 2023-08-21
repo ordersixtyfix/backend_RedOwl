@@ -2,7 +2,6 @@ package com.beam.assetManagement.assets;
 
 import com.beam.assetManagement.Scans.AllResultData.AllResultsService;
 import com.beam.assetManagement.Scans.FtpData.FtpReport;
-import com.beam.assetManagement.Scans.FtpData.FtpReportRepository;
 import com.beam.assetManagement.Scans.FtpData.FtpService;
 import com.beam.assetManagement.Scans.MySqlData.MySqlService;
 import com.beam.assetManagement.assetRecon.AssetEnumerationService;
@@ -26,10 +25,7 @@ import java.util.Optional;
 public class AssetController {
 
     private final AssetEnumerationService assetEnumerationService;
-
-    private final AssetRepository assetRepository;
     private final FtpService ftpService;
-    private final FtpReportRepository ftpReportRepository;
     private final IpDataService ipDataService;
     private final MySqlService mySqlService;
     private final ServiceEnum serviceEnum;
@@ -48,6 +44,20 @@ public class AssetController {
         }
 
     }
+
+    @PostMapping("/shodan/{IpAddress}")
+    public GenericResponse<String> ShodanEnum(@PathVariable String IpAddress) {
+
+        try {
+            ipDataService.shodanIpEnum(IpAddress);
+
+            return new GenericResponse<String>().setCode(200);
+        } catch (Exception e) {
+            return new GenericResponse<String>().setCode(400);
+        }
+
+    }
+
 
 
     @PostMapping("/create-admin/{userId}")
@@ -84,20 +94,9 @@ public class AssetController {
 
     }
 
-    /*
-        @PostMapping("/get/{subdomain}")
-        public ResponseEntity<List<SubdomainPortData>> getAssetScan(@PathVariable String subdomain) throws Exception {
 
 
-            List<SubdomainPortData> subdomainPortData = assetEnumerationService.getPortData(subdomain);
-            if(subdomainPortData.isEmpty()){
-                return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
-            }
-            else{
-                return ResponseEntity.ok(subdomainPortData);
-            }
-        }
-    */
+
     @GetMapping("/get/scandata/{assetId}")
     public GenericResponse<List<IpData>> getScanData(@PathVariable String assetId) throws Exception {
 

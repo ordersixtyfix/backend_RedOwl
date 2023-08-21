@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @SuperBuilder
 @NoArgsConstructor
 @Component
-public class AllResults {
+public class AllResults{
     private GenericResponse<?> ftpResult;
     private GenericResponse<?> postGreSqlResult;
     private GenericResponse<?> mySqlResult;

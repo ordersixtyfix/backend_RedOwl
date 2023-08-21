@@ -7,7 +7,6 @@
     import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainDataService;
     import com.beam.assetManagement.assetRecon.SubdomainDataDetails.SubdomainDataDetailService;
     import com.beam.assetManagement.assets.Asset;
-    import com.beam.assetManagement.assets.AssetData;
     import com.beam.assetManagement.assets.AssetRepository;
     import com.beam.assetManagement.utils.RegexMatcherService;
     import lombok.RequiredArgsConstructor;
@@ -62,22 +61,27 @@
 
             String modifiedDomain = assetDomain.substring(4);
 
-            List<String> nameServers = getNameServers(modifiedDomain);
-            List<String> registrarServer = getRegistrarData(modifiedDomain);
-            Set<String> uniqueSubdomains = new HashSet<>();
+            //List<String> nameServers = getNameServers(modifiedDomain);
+            //List<String> registrarServer = getRegistrarData(modifiedDomain);
+            //Set<String> uniqueSubdomains = new HashSet<>();
             Set<String> uniqueSubdomainIds = new HashSet<>();
 
 
             ipDataService.detectPort(assetId);
-            subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomains,uniqueSubdomainIds);
+            //Set<String> processedSubdomains = new HashSet<>();
+            subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomainIds);
+
             subdomainDataService.SaveSubdomainData(uniqueSubdomainIds,assetId,firmId);
+
             ipDataService.getIpFromDataDetailsObject(subdomainDataDetailService.getDataDetailsObjectById(assetId),assetId);
+
             ipDataService.insertPortScanToObject(assetId,firmId);
 
 
 
-            AssetData assetData = new AssetData(registrarServer, nameServers);
-            testAsset.setAssetData(assetData);
+
+            //AssetData assetData = new AssetData(registrarServer, nameServers);
+            //testAsset.setAssetData(assetData);
 
 
             assetRepository.save(testAsset);
@@ -105,7 +109,7 @@
                 nameServers.add(trimmedNameServer);
             }
 
-            System.out.println(nameServers);
+
 
             return nameServers;
         }
