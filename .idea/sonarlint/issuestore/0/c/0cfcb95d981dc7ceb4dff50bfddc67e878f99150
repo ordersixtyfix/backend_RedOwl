@@ -1,0 +1,6 @@
+
+z
+java:S1488L"_Immediately return this expression instead of assigning it to the temporary variable "reports".(ƒ³®…ûÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Ş¶í
+i
+java:S2259)"GA "NullPointerException" could be thrown; "ftpClient" is nullable here.(¶Ù¯Èşÿÿÿÿ8ÎÒ¨¸¡1

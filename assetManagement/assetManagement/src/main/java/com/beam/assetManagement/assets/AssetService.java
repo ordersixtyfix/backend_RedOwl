@@ -93,6 +93,15 @@ public class AssetService {
 
     }
 
+    public Optional<Asset> getAssetByAssetName(boolean isAdmin, String assetName, String firmId){
+        if(isAdmin){
+            return assetRepository.findByAssetName(assetName);
+        }else {
+            return assetRepository.findByAssetNameAndFirmId(assetName,firmId);
+        }
+
+    }
+
     public Optional<Asset> getAssetById(String assetId) {
         return assetRepository.findById(assetId);
     }

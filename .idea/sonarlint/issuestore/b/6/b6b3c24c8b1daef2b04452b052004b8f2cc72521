@@ -1,0 +1,22 @@
+
+`
+java:S1192'"KDefine a constant instead of duplicating this literal "SUPER_USER" 5 times.(ŸÒá
+x
+java:S1488Ë"\Immediately return this expression instead of assigning it to the temporary variable "role".(‹îø‡úÿÿÿÿ
+Q
+java:S4973'"<Strings and Boxed types should be compared using "equals()".(ŸÒá
+Q
+java:S4973H"<Strings and Boxed types should be compared using "equals()".(ŸÒá
+Q
+java:S4973~"<Strings and Boxed types should be compared using "equals()".(ŸÒá
+R
+java:S4973"<Strings and Boxed types should be compared using "equals()".(ŸÒá
+R
+java:S4973¨"<Strings and Boxed types should be compared using "equals()".(ŸÒá
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Š–¾–
+d
+java:S3655Ë"HCall "user.isPresent()" or "!user.isEmpty()" before accessing the value.(‹îø‡úÿÿÿÿ
+n
+java:S2737º"WAdd logic to this catch clause or eliminate it and rethrow the exception automatically.(ö™û
+K
+java:S1481§"/Remove this unused "ipDataList" local variable.(Ú£…›üÿÿÿÿ

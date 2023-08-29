@@ -117,8 +117,30 @@ public class AssetController {
     }
 
 
+
+
+    @GetMapping("/get/asset-by-name/{assetName}/{userId}/{firmId}")
+    public GenericResponse<Optional<Asset>> getAssetByName(@PathVariable String assetName,@PathVariable String userId,@PathVariable String firmId) {
+
+
+        try {
+            boolean isAdmin = assetService.userValidation(userId);
+            if (isAdmin) {
+                return new GenericResponse<Optional<Asset>>().setCode(200).setData(assetService.getAssetByAssetName(true,assetName,firmId));
+            } else {
+                return new GenericResponse<Optional<Asset>>().setCode(200).setData(assetService.getAssetByAssetName(false,assetName,firmId));
+            }
+
+
+        } catch (Exception e) {
+            return new GenericResponse<Optional<Asset>>().setCode(400);
+        }
+
+    }
+
+
     //GET ALL ASSET DATA
-    @GetMapping("/get/assetdata/{userId}/{firmId}")
+    @GetMapping("/get/asset-data/{userId}/{firmId}")
     public GenericResponse<Page<Asset>> getAsset(@RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "2") int size,
                                                  @PathVariable String userId,@PathVariable String firmId) {

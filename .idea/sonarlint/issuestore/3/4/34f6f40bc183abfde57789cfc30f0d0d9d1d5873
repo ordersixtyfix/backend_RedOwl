@@ -1,0 +1,5 @@
+
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(øÜƒ¿üÿÿÿÿ8îé·ÿŸ1
+x	java:S116"WRename this field "PortScanData" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(×ŞÊ÷øÿÿÿÿ8Õù” 1
+x	java:S116'"WRename this field "country_code" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(„ÏÄùÿÿÿÿ8‘¸¡Ã 1
+r	java:S116("VRename this field "region_code" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Òö¢¤8 ¡¢Ã 1
