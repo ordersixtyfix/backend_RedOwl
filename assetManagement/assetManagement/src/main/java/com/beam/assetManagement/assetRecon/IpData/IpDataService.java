@@ -39,6 +39,8 @@ public class IpDataService {
 
     private final EmailSenderService emailSenderService;
 
+    private String anc="ss";
+
 
     public String DomainToIP(String domain) throws IOException, UnknownHostException {
 
