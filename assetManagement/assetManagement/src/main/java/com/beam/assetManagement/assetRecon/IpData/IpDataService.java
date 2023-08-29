@@ -39,6 +39,8 @@ public class IpDataService {
 
     private final EmailSenderService emailSenderService;
 
+    private String anc="ss";
+
 
     public String DomainToIP(String domain) throws IOException, UnknownHostException {
 
@@ -125,7 +127,7 @@ public class IpDataService {
         if (node != null && !node.isNull()) {
             return node.asDouble();
         }
-        return 0.0; // You can choose a default value here
+        return 0.0;
     }
 
 
@@ -204,15 +206,11 @@ public class IpDataService {
         String os = shodanOperatingSystemEnum(ipAddress);
         for (IpData ipData : ipDataList) {
             if (ipData.getIpAddress().contains(ipAddress)) {
-                ipData.addShareSubdomains(subdomain);
-                ipData.setVulns(vulns);
-                ipData.setOs(os);
-                ipData.setAsn(asn);
-                ipData.setCity(city);
-                ipData.setCountry_code(country_code);
-                ipData.setRegion_code(region_code);
-                ipData.setIsp(isp);
-                ipData.setLatitude(latitude);
+                ipData.addShareSubdomains(subdomain);ipData.setVulns(vulns);
+                ipData.setOs(os);ipData.setAsn(asn);
+                ipData.setCity(city);ipData.setCountry_code(country_code);
+                ipData.setRegion_code(region_code);ipData.setIsp(isp);
+                ipData.setPortScanData(new ArrayList<>());ipData.setLatitude(latitude);
                 ipData.setLongitude(longitude);
                 ipDataRepository.save(ipData);
                 break;
@@ -236,6 +234,7 @@ public class IpDataService {
                 .subdomainShareIp(new HashSet<>()).accessData(new ArrayList<>())
                 .asn(asn).city(city).country_code(country_code).region_code(region_code).isp(isp)
                 .vulns(vulns).latitude(latitude).longitude(longitude).os(os)
+                .PortScanData(new ArrayList<>())
                 .build();
         ipData.addShareSubdomains(subdomain);
         ipData.setId(UUID.randomUUID().toString());

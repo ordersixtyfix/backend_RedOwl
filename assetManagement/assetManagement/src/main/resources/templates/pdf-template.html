@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>PDF Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .data-set {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .data-set {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            page-break-after: always;
+        }
+
+
+        table {
+            width: 90%;
+            margin: 0 auto;
+        }
+
+    </style>
+</head>
+<body>
+<h1>Scan Report</h1>
+
+<div th:each="result : ${scanResultRequestList}" class="data-set">
+    <p><strong>IP Address:</strong> <span th:text="${result.ipAddress}">N/A</span></p>
+    <p><strong>ISP:</strong> <span th:text="${result.isp}">N/A</span></p>
+    <p><strong>ASN:</strong> <span th:text="${result.asn}">N/A</span></p>
+    <p><strong>Longitude:</strong> <span th:text="${result.longitude}">N/A</span></p>
+    <p><strong>Latitude:</strong> <span th:text="${result.latitude}">N/A</span></p>
+    <p><strong>City:</strong> <span th:text="${result.city}">N/A</span></p>
+    <p><strong>Country Code:</strong> <span th:text="${result.country_code}">N/A</span></p>
+    <p><strong>Region Code:</strong> <span th:text="${result.region_code}">N/A</span></p>
+    <p><strong>Scan Date:</strong> <span th:text="${result.scanDate}">N/A</span></p>
+
+    <p><strong>Subdomain Share IP:</strong></p>
+    <ul>
+        <li th:each="subdomain : ${result.subdomainShareIp}" th:text="${subdomain}">N/A</li>
+    </ul>
+
+    <table th:if="${result.portScanData != null and not #lists.isEmpty(result.portScanData)}">
+        <tr>
+            <th>Port</th>
+            <th>State</th>
+            <th>Service</th>
+            <th>Version</th>
+        </tr>
+        <tr th:each="portData : ${result.portScanData}">
+            <td th:text="${portData.port}">N/A</td>
+            <td th:text="${portData.portState}">N/A</td>
+            <td th:text="${portData.portService}">N/A</td>
+            <td th:text="${portData.portServiceVersion}">N/A</td>
+        </tr>
+    </table>
+    <p th:unless="${result.portScanData != null and not #lists.isEmpty(result.portScanData)}">No port data
+        available.</p>
+
+    <div style="page-break-after: always;"></div>
+</div>
+
+</body>
+</html>

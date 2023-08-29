@@ -35,7 +35,6 @@ public class EmailSenderService {
         context.setVariable("assetName", assetName);
         context.setVariable("pairedNewPorts", pairedNewPorts);
         context.setVariable("pairedClosedPorts", pairedClosedPorts);
-
         String content = templateEngine.process("port_status_email_template", context);
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();

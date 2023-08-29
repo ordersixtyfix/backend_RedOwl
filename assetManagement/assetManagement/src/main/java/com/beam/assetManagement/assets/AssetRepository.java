@@ -27,7 +27,9 @@ public interface AssetRepository extends MongoRepository<Asset, Integer> {
 
     Long countAssetByAssetLocation(String location);
 
+    Optional<Asset> findByAssetName(String assetName);
 
+    Optional<Asset> findByAssetNameAndFirmId(String assetName,String firmId);
 
 
     Optional<Asset> deleteAssetById(String assetId);
