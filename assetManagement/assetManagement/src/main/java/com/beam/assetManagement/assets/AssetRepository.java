@@ -29,6 +29,12 @@ public interface AssetRepository extends MongoRepository<Asset, Integer> {
 
     Optional<Asset> findByAssetName(String assetName);
 
+
+    Optional<Asset> findByAssetDomainAndFirmId(String assetName, String firmId);
+
+
+    Optional<Asset> findByAssetDomain(String assetDomain);
+
     Optional<Asset> findByAssetNameAndFirmId(String assetName,String firmId);
 
 

@@ -39,7 +39,6 @@ public class IpDataService {
 
     private final EmailSenderService emailSenderService;
 
-    private String anc="ss";
 
 
     public String DomainToIP(String domain) throws IOException, UnknownHostException {
@@ -158,13 +157,13 @@ public class IpDataService {
 
 
 
-    public List<SubdomainPortData> getPortData(String ipAddress) throws IOException {
+    public List<SubdomainPortData> getPortData(String ipAddress, String scanSpeed) throws IOException {
 
         String regexPort = "(\\d+\\/\\w+)\\s+(\\w+)\\s+([\\w\\/-]+)\\s*([\\w\\/-]*)";
 
         Pattern patternPort = Pattern.compile(regexPort);
 
-        ProcessBuilder processBuilder = new ProcessBuilder("nmap","-sS","-sV",ipAddress);
+        ProcessBuilder processBuilder = new ProcessBuilder("nmap","-"+scanSpeed,"-sS","-sV",ipAddress);
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -270,7 +269,7 @@ public class IpDataService {
         }
     }
 
-    public void insertPortScanToObject(String assetId, String firmId) throws IOException {
+    public void insertPortScanToObject(String assetId, String firmId,String scanSpeed) throws IOException {
 
         List<IpData> ipDataList = ipDataRepository.findByAssetId(assetId);
 
@@ -278,7 +277,7 @@ public class IpDataService {
 
             for (IpData obj : ipDataList) {
                 String ipAddress = obj.getIpAddress();
-                List<SubdomainPortData> portData = getPortData(ipAddress);
+                List<SubdomainPortData> portData = getPortData(ipAddress,scanSpeed);
                 obj.insertPortData(portData);
                 obj.setFirmId(firmId);
                 obj.setScanDate(new java.sql.Timestamp(new Date().getTime()));
@@ -305,7 +304,7 @@ public class IpDataService {
         if (!ipDataList.isEmpty()) {
             for (IpData ipData : ipDataList) {
                 String ipAddress = ipData.getIpAddress();
-                List<SubdomainPortData> portDataList = getPortData(ipAddress);
+                List<SubdomainPortData> portDataList = getPortData(ipAddress,"T3");
 
                 List<SubdomainPortData> existingPortDataList = ipData.getPortScanData();
                 List<String> existingPorts = existingPortDataList.stream()

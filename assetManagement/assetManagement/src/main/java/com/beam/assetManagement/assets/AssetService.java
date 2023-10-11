@@ -6,6 +6,8 @@ import com.beam.assetManagement.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +22,9 @@ public class AssetService {
     private final AssetRepository assetRepository;
     private final UserRepository userRepository;
     private final IpDataRepository ipDataRepository;
+
+    private final GridFsTemplate gridFsTemplate;
+    private final MongoTemplate mongoTemplate;
 
 
     public boolean createAsset(AssetRequest request) {
@@ -127,6 +132,8 @@ public class AssetService {
 
 
     }
+
+
 
 
 }

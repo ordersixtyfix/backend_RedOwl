@@ -1,0 +1,18 @@
+
+`
+java:S1192L"KDefine a constant instead of duplicating this literal "SUPER_USER" 3 times.(ü“·
+Q
+java:S4973L"<Strings and Boxed types should be compared using "equals()".(ü“·
+Q
+java:S4973Z"<Strings and Boxed types should be compared using "equals()".(ü“·
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Ã˙á·
+c
+java:S3655W"HCall "user.isPresent()" or "!user.isEmpty()" before accessing the value.(é˚‹∞¯ˇˇˇˇ
+d
+java:S3655Å"HCall "user.isPresent()" or "!user.isEmpty()" before accessing the value.(é˚‹∞¯ˇˇˇˇ
+c
+java:S3655J"HCall "user.isPresent()" or "!user.isEmpty()" before accessing the value.(é˚‹∞¯ˇˇˇˇ
+q
+java:S4144&"[Update this method so that its implementation is not identical to "createAsset" on line 30.(’•àÅ
+>
+java:S1125É"(Remove the unnecessary boolean literals.(è·∑`

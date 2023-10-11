@@ -20,6 +20,8 @@ import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.*;
@@ -49,6 +51,7 @@ public class SubdomainDataDetailService {
                     subdomains.addAll(redirectedSubdomains);
                 }
             }
+
             if (!isSubdomainUp(subdomain)) {
                 if (subdomainDetailsRepository.existsBySubdomain(subdomain)) {
                     HostDownAndExist(uniqueSubdomainIds, subdomain);
@@ -77,12 +80,26 @@ public class SubdomainDataDetailService {
         return subdomains;
     }
 
-    public static boolean isSubdomainUp(String subdomain) {
+    public static boolean isSubdomainUp(String subdomain) throws IOException {
         try {
-            Process process = Runtime.getRuntime().exec("ping -c 1 " + subdomain);
-            int exitCode = process.waitFor();
-            return exitCode == 0;
-        } catch (IOException | InterruptedException e) {
+
+            URL urlHttp = new URL("http://" + subdomain);
+
+            HttpURLConnection connectionHttp = (HttpURLConnection) urlHttp.openConnection();
+            connectionHttp.setRequestMethod("HEAD");
+            connectionHttp.setConnectTimeout(5000);
+
+
+            int responseCodeHttp = connectionHttp.getResponseCode();
+
+            if(responseCodeHttp>=200 && responseCodeHttp <400){
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        } catch (IOException e) {
             return false;
         }
     }
@@ -213,7 +230,6 @@ public class SubdomainDataDetailService {
 
     public void amassSearch(Set<String> uniqueSubdomains, String domain) throws IOException {
         String amassPath = "C:\\amass_Windows_amd64\\amass.exe";
-
         ProcessBuilder processBuilder = new ProcessBuilder(amassPath, "enum", "-passive", "-d", domain);
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();

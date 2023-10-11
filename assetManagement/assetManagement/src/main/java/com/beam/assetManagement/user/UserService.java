@@ -108,8 +108,13 @@ public class UserService implements UserDetailsService {
                 .email(user.get().getEmail())
                 .appUserRole(user.get().getAppUserRole())
                 .firmId(user.get().getFirmId()).build();
+    }
 
 
+    public String getFirmIdByUserId(String userId){
+        Optional<User> user = userRepository.findById(userId);
+        String firmId = user.get().getFirmId();
+        return firmId;
     }
 
 

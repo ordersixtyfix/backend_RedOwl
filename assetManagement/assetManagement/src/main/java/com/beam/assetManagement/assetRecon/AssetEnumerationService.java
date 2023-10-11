@@ -1,13 +1,13 @@
     package com.beam.assetManagement.assetRecon;
 
     import com.beam.assetManagement.assetRecon.IpData.IpData;
-    import com.beam.assetManagement.assetRecon.IpData.IpDataRepository;
     import com.beam.assetManagement.assetRecon.IpData.IpDataService;
     import com.beam.assetManagement.assetRecon.IpData.SubdomainPortData;
     import com.beam.assetManagement.assetRecon.SubdomainData.SubdomainDataService;
     import com.beam.assetManagement.assetRecon.SubdomainDataDetails.SubdomainDataDetailService;
     import com.beam.assetManagement.assets.Asset;
     import com.beam.assetManagement.assets.AssetRepository;
+    import com.beam.assetManagement.user.UserService;
     import com.beam.assetManagement.utils.RegexMatcherService;
     import lombok.RequiredArgsConstructor;
     import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@
 
         private final IpDataService ipDataService;
 
-        private final IpDataRepository ipDataRepository;
+        private final UserService userService;
 
 
 
@@ -49,43 +49,41 @@
 
 
 
-        public List<String> setAsset(String assetId,String firmId) throws Exception {
-            Optional<Asset> asset = assetRepository.findById(assetId);
-            Asset testAsset = asset.get();
-            String assetDomain = testAsset.getAssetDomain();
-            String assetName = testAsset.getAssetName();
+        public List<String> setAsset(String assetDomainName,String firmId,String userId, String scanSpeed) throws Exception {
 
-            assetDomainName = assetName;
+            String role = userService.isSuperUser(userId);
+            Optional<Asset> asset = null;
 
-
-
-            String modifiedDomain = assetDomain.substring(4);
-
-            //List<String> nameServers = getNameServers(modifiedDomain);
-            //List<String> registrarServer = getRegistrarData(modifiedDomain);
-            //Set<String> uniqueSubdomains = new HashSet<>();
-            Set<String> uniqueSubdomainIds = new HashSet<>();
+            if(role=="SUPER_USER"){
+                asset = assetRepository.findByAssetDomain(assetDomainName);
+            }
+            else {
+                asset = assetRepository.findByAssetDomainAndFirmId(assetDomainName,firmId);
+            }
 
 
-            ipDataService.detectPort(assetId);
-            //Set<String> processedSubdomains = new HashSet<>();
-            subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomainIds);
+            if (asset.isPresent()) {
+                Asset testAsset = asset.get();
+                String assetId = testAsset.getId();
+                String modifiedDomain = assetDomainName.substring(4);
+                Set<String> uniqueSubdomainIds = new HashSet<>();
+                ipDataService.detectPort(assetId);
+                 subdomainDataDetailService.getSubdomains(modifiedDomain,uniqueSubdomainIds);
 
-            subdomainDataService.SaveSubdomainData(uniqueSubdomainIds,assetId,firmId);
+                subdomainDataService.SaveSubdomainData(uniqueSubdomainIds,assetId,firmId);
 
-            ipDataService.getIpFromDataDetailsObject(subdomainDataDetailService.getDataDetailsObjectById(assetId),assetId);
+                ipDataService.getIpFromDataDetailsObject(subdomainDataDetailService.getDataDetailsObjectById(assetId),assetId);
 
-            ipDataService.insertPortScanToObject(assetId,firmId);
+                ipDataService.insertPortScanToObject(assetId,firmId,scanSpeed);
 
+                assetRepository.save(testAsset);
+                return null;
+            }
+            else{
 
+                throw new IllegalAccessException("Asset with the provided asset domain name not found.");
+            }
 
-
-            //AssetData assetData = new AssetData(registrarServer, nameServers);
-            //testAsset.setAssetData(assetData);
-
-
-            assetRepository.save(testAsset);
-            return null;
 
         }
 

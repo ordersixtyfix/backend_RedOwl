@@ -3,15 +3,13 @@ package com.beam.assetManagement.assets;
 import com.beam.assetManagement.assetRecon.AssetEnumerationService;
 import com.beam.assetManagement.assetRecon.IpData.IpData;
 import com.beam.assetManagement.assetRecon.IpData.IpDataService;
-import com.beam.assetManagement.assetRecon.Scans.AllResultData.AllResultsService;
-import com.beam.assetManagement.assetRecon.Scans.FtpData.FtpReport;
-import com.beam.assetManagement.assetRecon.Scans.FtpData.FtpService;
-import com.beam.assetManagement.assetRecon.Scans.MySqlData.MySqlService;
-import com.beam.assetManagement.assetRecon.Scans.PostgreSqlData.PostGreService;
-import com.beam.assetManagement.assetRecon.Scans.PostgreSqlData.PostGreSqlReport;
-import com.beam.assetManagement.assetRecon.Scans.ScanRequest;
+import com.beam.assetManagement.assetRecon.ServiceEnum.ServiceData.ServiceEnumService;
+import com.beam.assetManagement.assetRecon.ServiceEnum.FtpData.FtpService;
+import com.beam.assetManagement.assetRecon.ServiceEnum.PostgreSqlData.PostGreService;
+import com.beam.assetManagement.assetRecon.ServiceEnum.ScanRequest;
 import com.beam.assetManagement.common.GenericResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,17 +22,17 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 @RequestMapping(path = "api/v1/asset")
+@Slf4j
 public class AssetController {
 
     private final AssetEnumerationService assetEnumerationService;
     private final FtpService ftpService;
     private final IpDataService ipDataService;
-    private final MySqlService mySqlService;
 
     private final PostGreService postGreService;
 
     private final AssetService assetService;
-    private final AllResultsService allResultsService;
+    private final ServiceEnumService serviceEnumService;
 
     @PostMapping("/create")
     public GenericResponse<String> createAsset(@RequestBody AssetRequest request) {
@@ -86,7 +84,7 @@ public class AssetController {
 
 
     //SCAN SPECIFIC ASSET BY ASSET NAME
-    @PostMapping("/scan/{assetId}/{firmId}")
+    /*@PostMapping("/scan/{assetId}/{firmId}")
     public GenericResponse<Optional<Asset>> getAssetData(@PathVariable String assetId, @PathVariable String firmId) throws Exception {
         try {
             assetEnumerationService.setAsset(assetId,firmId);
@@ -96,14 +94,42 @@ public class AssetController {
         }
 
 
+    }*/
+
+
+    @PostMapping("/scan/{assetDomain}/{assetId}/{userId}/{firmId}")
+    public GenericResponse<Optional<Asset>> getAssetData(
+            @PathVariable String assetDomain,
+            @PathVariable String assetId,
+            @PathVariable String userId,
+            @PathVariable String firmId,
+            @RequestBody ScanRequest scanRequest){
+
+        List<String> types = scanRequest.getScanType();
+        String scanSpeed = scanRequest.getScanSpeed();
+
+
+
+        try {
+            serviceEnumService.allScanner(assetId,firmId,types,userId);
+            assetEnumerationService.setAsset(assetDomain, firmId,userId,scanSpeed);
+            return new GenericResponse<Optional<Asset>>().setCode(200);
+        }catch (Exception e) {
+            return new GenericResponse<Optional<Asset>>().setCode(400);
+        }
+
     }
+
+
+
+
+
 
 
 
 
     @GetMapping("/get/scandata/{assetId}")
     public GenericResponse<List<IpData>> getScanData(@PathVariable String assetId) throws Exception {
-
         try {
             List<IpData> ipData = ipDataService.getIpDataObjectList(assetId);
 
@@ -112,11 +138,7 @@ public class AssetController {
         } catch (Exception e) {
             return new GenericResponse<List<IpData>>().setCode(400);
         }
-
-
     }
-
-
 
 
     @GetMapping("/get/asset-by-name/{assetName}/{userId}/{firmId}")
@@ -212,37 +234,12 @@ public class AssetController {
 
 
 
-    @PostMapping("/scanselect/{assetId}/{firmId}")
-    public GenericResponse<?> scanResultGenericResponse(
-            @PathVariable String assetId, @PathVariable String firmId,
-            @RequestBody ScanRequest scanType
-    ) {
-        try {
-            Object allResults = allResultsService.allScanner(assetId, firmId, scanType);
-            return new GenericResponse<>().setCode(200).setData(allResults);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new GenericResponse<>().setCode(522);
-        }
-    }
 
-    @GetMapping("/get/ftp/{assetId}")
-    public GenericResponse<List<FtpReport>> getAllFtpReports(@PathVariable String assetId) {
-        try {
-            return new GenericResponse<List<FtpReport>>().setCode(200).setData(ftpService.findByAssetId(assetId));
-        } catch (Exception e) {
-            return new GenericResponse<List<FtpReport>>().setCode(400);
-        }
-    }
 
-    @GetMapping("/get/postgresql/{assetId}")
-    public GenericResponse<List<PostGreSqlReport>> getAllPostgresqlReports(@PathVariable String assetId) {
-        try {
-            return new GenericResponse<List<PostGreSqlReport>>().setCode(200).setData(postGreService.findByAssetId(assetId));
-        } catch (Exception e) {
-            return new GenericResponse<List<PostGreSqlReport>>().setCode(400);
-        }
-    }
+
+
+
+
 
 
 }
