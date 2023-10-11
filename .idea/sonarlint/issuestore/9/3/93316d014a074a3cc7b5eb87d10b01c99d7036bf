@@ -1,0 +1,41 @@
+
+n	java:S135o"YReduce the total number of break and continue statements in this loop to use at most one.(ŞÙ»
+E
+java:S10660"/Merge this if statement with the enclosing one.(õ³áï
+L
+java:S1141‹"5Extract this nested try block into a separate method.(³êğ‹
+L
+java:S1141¾"5Extract this nested try block into a separate method.(³êğ‹
+{
+java:S1488½"dImmediately return this expression instead of assigning it to the temporary variable "savedDetails".(óÅÛØ
+†
+java:S1488Õ"oImmediately return this expression instead of assigning it to the temporary variable "extractedRedirectDomain".(ğÈ×¥
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ì İ›
+f
+java:S2259¨"JA "NullPointerException" could be thrown; "savedDetails" is nullable here.(€™âõùÿÿÿÿ
+`
+java:S2095¥"DUse try-with-resources or close this "Socket" in a "finally" clause.(ÁÏÓŸùÿÿÿÿ
+v
+java:S3655ê"ZCall "subdomainData.isPresent()" or "!subdomainData.isEmpty()" before accessing the value.(Ã…öµûÿÿÿÿ
+„
+java:S3655ï"hCall "subdomainDataDetails.isPresent()" or "!subdomainDataDetails.isEmpty()" before accessing the value.(ìşéØúÿÿÿÿ
+h
+java:S3776("RRefactor this method to reduce its Cognitive Complexity from 27 to the 15 allowed.(•èÃ
+o
+java:S6201ª"XReplace this instanceof check and cast with 'instanceof X509Certificate x509Certificate'(•Üò®
+D
+java:S2201Ç"-The return value of "substring" must be used.(Ã–
+X
+java:S1075×"ARefactor your code to get this URI from a customizable parameter.(º§œÉ
+d	java:S100ú"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÅÌ¬í
+i	java:S100ƒ"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(–Ú†Õşÿÿÿÿ
+W	java:S125…"<This block of commented-out lines of code should be removed.(§µäîıÿÿÿÿ
+i	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¶¥üÿÿÿÿ
+i	java:S100™"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÔÀàÏÿÿÿÿÿ
+W	java:S125œ"<This block of commented-out lines of code should be removed.(¼ë¹¦ıÿÿÿÿ
+i	java:S100¤"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‹ñÍ‚ÿÿÿÿÿ
+d	java:S100²"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÖêŠ¾
+R	java:S125´"<This block of commented-out lines of code should be removed.(‡†õ
+H
+java:S1874Å",Remove this use of "exec"; it is deprecated.(¹—øÿÿÿÿ
+d	java:S100Ñ"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¡Î”

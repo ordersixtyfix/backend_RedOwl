@@ -17,11 +17,8 @@ public class User extends Base {
 
 
     private String firstName;
-
     private String lastName;
-
     private String email;
-
     private String password;
     private AppUserRole appUserRole;
     private String firmId;
